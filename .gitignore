@@ -3,3 +3,6 @@
 /Logs
 
 /Temp
+/obj
+/Assembly-CSharp.csproj
+/StoreSystem.sln
