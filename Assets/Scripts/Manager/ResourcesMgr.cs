@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,6 +10,11 @@ using System.Collections.Generic;
 public class ResourcesMgr : Obj
 {
     private Hashtable ht = null;// 容器键值对集合
+    public GameObject Asset { private set; get; }
+    public UIMgr UIMgr { private set; get; }
+    public string UIName { private set; get; }
+    public object[] Args { private set; get; }
+    public UI ui;
 
     public override void Awake()
     {
@@ -20,28 +24,29 @@ public class ResourcesMgr : Obj
     /// <summary>
     /// 实例化资源
     /// </summary>
-    /// <param name="path"></param>
-    /// <param name="isCatch"></param>
-    /// <returns></returns>
-    public GameObject LoadAsset(string path, bool isCatch = true)
+    public void LoadAsset(UIMgr ui_mgr, string ui_name, params object[] args)
     {
-        GameObject goObj = LoadResource<GameObject>(path, isCatch);
-        GameObject goObjClone = GameObject.Instantiate<GameObject>(goObj);
-        if (goObjClone == null)
+        GameObject goObj = LoadResource<GameObject>(ui_name);
+        Asset = GameObject.Instantiate<GameObject>(goObj);
+        Asset.name = ui_name;
+        if (Asset == null)
         {
-            Debug.LogError(GetType() + "克隆资源不成功，path = " + SysDefine.PrefabPath + path);
+            Debug.LogError(GetType() + "克隆资源不成功，path = " + SysDefine.PrefabPath + ui_name);
+            return;
         }
-        return goObjClone;
+        Type type = Type.GetType(ui_name + "UI");
+        this.UIMgr = ui_mgr;
+        this.UIName = ui_name;
+        this.Args = args;
+        this.ui = Asset.gameObject.AddComponent(type) as UI;// 挂载脚本
+        ui.gameObject.transform.SetParent(UIMgr.Root.transform);// 设置父节点
+        ui.InitData(this);
     }
 
     /// <summary>
     /// 获取资源
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="path"></param>
-    /// <param name="isCatch"></param>
-    /// <returns></returns>
-    public T LoadResource<T>(string path, bool isCatch) where T : UnityEngine.Object
+    public T LoadResource<T>(string path) where T : UnityEngine.Object
     {
         if (ht.Contains(path))
         {
@@ -52,10 +57,7 @@ public class ResourcesMgr : Obj
         {
             Debug.LogError(GetType() + "资源找不到，path = " + path);
         }
-        else if (isCatch)
-        {
-            ht.Add(path, TResource);
-        }
+        ht.Add(path, TResource);
         return TResource;
     }
 }

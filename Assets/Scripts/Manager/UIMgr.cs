@@ -15,9 +15,10 @@ public class UIMgr : Obj
     /// <typeparam name="UI">ui实例对象</typeparam>
     /// <returns></returns>
     public Map<string, UI> uis = new Map<string, UI>();
-    public GameObject RootUI;// 根节点
+    public GameObject Root;// 根节点
     public UI ui;
     public ResourcesMgr ResMgr;// 资源管理器
+    public Camera UICamera { private set; get; }// ui主相机
 
     public override void Awake()
     {
@@ -25,11 +26,37 @@ public class UIMgr : Obj
 
         ResMgr = system_mgr.GetSingleT<ResourcesMgr>();
 
-        RootUI = (GameObject)Resources.Load(SysDefine.PrefabPath + "Root");// 获取根节点
-        RootUI = UnityEngine.Object.Instantiate(RootUI);
-        UnityEngine.Object.DontDestroyOnLoad(RootUI);// 切换场景不销毁
-        // RootUI.AddComponent<UIMgr>();
-        FireEvent(new Events.UI.OpenUI("StartUI", "00" ,"111"));
+        Root = (GameObject)Resources.Load(SysDefine.PrefabPath + "Root");// 获取根节点
+        Root = UnityEngine.Object.Instantiate(Root);
+        UnityEngine.Object.DontDestroyOnLoad(Root);// 切换场景不销毁
+        UICamera = Tool.FindChild<Camera>(Root.transform, "Camera");
+        
+        FireEvent(new Events.UI.OpenUI("Start", Localization.Format("SYSTEM_NAME"), "111"));
+    }
+
+    public void ShowUI(UI ui)
+    {
+        if (ui.Layer == UILayer.Full)
+        {
+            for (uis.Begin(); uis.Next();)
+            {
+                if (uis.Value != null)
+                {
+                    uis.Value.Close();
+                }
+            }
+        }
+        if (!uis.ContainsKey(ui.Name))
+        {
+            uis.Add(ui.Name, ui);
+        }
+    }
+    public void CloseUI(UI ui)
+    {
+        if (uis.ContainsKey(ui.Name))
+        {
+            uis.Remove(ui.Name);
+        }
     }
 
     protected override void RegEvents()
@@ -40,7 +67,7 @@ public class UIMgr : Obj
     private void OnCreateUIEvent(Obj sender, Events.UI.OpenUI e)
     {
         Log.Debug("open_ui：" + e.UI);
-        UI ui = LoadUI(e.UI, e.Args);
+        LoadUI(e.UI, e.Args);
     }
 
     #region 私有方法
@@ -50,23 +77,15 @@ public class UIMgr : Obj
     /// </summary>
     /// <param name="UIName"></param>
     /// <returns></returns>
-    private UI LoadUI(string UIName, params object[] Args)
+    private void LoadUI(string UIName, params object[] Args)
     {
         if (uis.ContainsKey(UIName))
         {
-            return uis[UIName];
+            uis[UIName].Show();
+            return;
         }
-        Type type = Type.GetType(UIName);
 
-        GameObject obj = ResMgr.LoadAsset(UIName);// 加载资源并实例化
-        this.ui = obj.gameObject.AddComponent(type) as UI;// 挂载脚本
-        this.ui.gameObject.transform.SetParent(RootUI.transform);// 设置父节点
-
-        this.ui.ui_mgr = this;
-        this.ui.context = Args;
-
-        uis.Add(UIName, this.ui);
-        return this.ui;
+        ResMgr.LoadAsset(this, UIName, Args);// 加载资源并实例化
     }
 
     #endregion

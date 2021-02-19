@@ -1,0 +1,2 @@
+SYSTEM_NAME	商店管理系统
+bbb	哈哈哈

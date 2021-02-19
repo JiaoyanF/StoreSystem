@@ -10,50 +10,26 @@ public struct Def
 
 }
 
-
 #region 系统枚举类型
 
 /// <summary>
-/// UI窗体位置类型
+/// UI层类型
 /// </summary> 
-public enum UIFormType
+public enum UILayer
 {
     /// <summary>
     /// 普通窗体
     /// </summary> 
     Normal,
     /// <summary>
-    /// 固定窗体
+    /// 全屏窗体
     /// </summary> 
-    Fixed,
+    Full,
     /// <summary>
     /// 弹出窗体
     /// </summary> 
-    PopUp,
+    Tips,
 }
-
-/// <summary>
-/// ui窗体显示类型
-/// </summary>
-public enum UIShowType
-{
-    Normal,
-    ReverseChange,
-    HideOther,
-}
-
-/// <summary>
-/// ui窗体透明度类型
-/// </summary>
-public enum UILucenyType
-{
-    Lucency,// 完全透明，不能穿透
-    Translucence,// 半透明
-    ImPenetrable,// 低透明
-    Pentrate,// 可以穿透
-}
-
-#endregion
 
 /// <summary>
 /// 系统定义
@@ -62,8 +38,10 @@ public class SysDefine
 {
     public const string PrefabPath = "Prefab/";// 预制体路径
     public const string RawImagePath = "RawImage/";
+    public const string language = "Assets/Resources/Other/lang.txt";
 }
 
+#endregion
 
 #region 功能枚举类型
 

@@ -6,34 +6,34 @@ using UnityEngine.UI;
 /// <summary>
 /// 登录面板
 /// </summary> 
-public class LoginPanel : UI
+public class LoginPanel : UIElement
 {
-    GameObject obj;// 自身
-    GameObject mutex;// 互斥对象
     InputField un_input;
     InputField ps_input;
 
-    /// <summary>
-    /// 构造
-    /// </summary> 
-    /// <param name="obj">自身</param>
-    /// <param name="mutex">互斥对象</param>
-    public LoginPanel(GameObject obj, GameObject mutex)
+    public override void Initialize()
     {
-        this.obj = obj;
-        this.mutex = mutex;
-        Start();
+        un_input = GetControl<InputField>(Get(this, "un_input"));
+        ps_input = GetControl<InputField>(Get(this, "ps_input"));
     }
-    public override void Start()
+    public override void RegEvents()
     {
-        // Tool.FindChild(this.obj.transform, "mask").gameObject.GetComponent<Button>().onClick.AddListener(MaskClick);
-        SetBtnEvent(Get(this.obj, "mask"), MaskClick);
-        // Tool.FindChild(this.obj.transform, "login").gameObject.GetComponent<Button>().onClick.AddListener(LoadData);
-        GetControl<Button>(Get(this.obj,"login")).onClick.AddListener(LoadData);
-        Tool.FindChild(this.obj.transform, "reset").gameObject.GetComponent<Button>().onClick.AddListener(ResetData);
-        // un_input = Tool.FindChild(this.obj.transform, "un_input").gameObject.GetComponent<InputField>();
-        un_input = GetControl<InputField>(Get(this.obj, "un_input"));
-        ps_input = GetControl<InputField>(Get(this.obj, "ps_input"));
+        // base.RegEvents();
+        SetBtnEvent(Get(this, "mask"), MaskClick);
+        SetBtnEvent(Get(this, "login"), LoadData);
+        SetBtnEvent(Get(this, "reset"), ResetData);
+    }
+    public override void OnEnable()
+    {
+    }
+    public override void OnUpdata()
+    {
+    }
+    public override void OnDisable()
+    {
+    }
+    public override void OnDestroy()
+    {
     }
     /// <summary>
     /// 登录加载
@@ -44,14 +44,15 @@ public class LoginPanel : UI
         if (un_input.text == "000" && ps_input.text == "000")
         {
             ResetData();
-            //跳转到主界面
+            Log.Debug("成功登录");
+            FireEvent(new Events.UI.OpenUI("MainForm"));
         }
         else
         {
+            Log.Debug("登录失败");
             un_input.text = "000";
             ps_input.text = "000";
         }
-
     }
     /// <summary>
     /// 重置
@@ -63,9 +64,9 @@ public class LoginPanel : UI
     }
     private void MaskClick()
     {
-        print("111111111");
+        Log.Debug("重置数据，关闭登录面板");
         ResetData();
-        this.obj.SetActive(false);
-        this.mutex.SetActive(true);
+        (Root as StartUI).ChangeBtnsShow();
+        this.gameObject.SetActive(false);
     }
 }

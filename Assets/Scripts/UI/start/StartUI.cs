@@ -9,6 +9,7 @@ using UnityEngine.UI;
 /// </summary> 
 public class StartUI : UI
 {
+    public override UILayer Layer { get { return UILayer.Normal; } }
     private GameObject title;// 标题对象
     private GameObject center;// 中间按钮组
     private GameObject login_btn;// 登录按钮
@@ -16,31 +17,42 @@ public class StartUI : UI
     private GameObject close_btn;// 关闭
     private GameObject login_panel;// 登录面板
     private GameObject bg;// 背景
-    private LoginPanel loginPanel;// 登录面板类
+    private LoginPanel loginPanel;// 登录面板实例
+    private AboutPanel aboutPanel;// 关于面板实例
 
-    public override void Start()
+    public override void Initialize()
     {
-        // base.Start();
         title = Get(this, "title");
         center = Get(this, "center");
         login_btn = Get(this, "login_btn");
         about_btn = Get(this, "about_btn");
         close_btn = Get(this, "close_btn");
-        login_panel = Get(this, "login_panel");
+        login_panel = Get(this, "LoginPanel");
         bg = Get(this, "bg");
-        
-        loginPanel = new LoginPanel(login_panel, center);
-        Tool.GetOrAddComponent<LoginPanel>(login_panel);
 
-        SetText<Text>(title, "这是一个管理系统");
-        
+        Log.Debug("context", context);
+        SetText<Text>(title, context[0].ToString());
+
+        loginPanel = NewElement(this, login_panel) as LoginPanel;// 实例化登录面板
+    }
+    public override void RegEvents()
+    {
         SetBtnEvent(login_btn, LoginBtnClick);
         SetBtnEvent(about_btn, AboutClick);
         SetBtnEvent(close_btn, CloseBtnClick);
-
-        Log.Debug("context", context);
     }
-
+    public override void OnEnable()
+    {
+    }
+    public override void OnUpdata()
+    {
+    }
+    public override void OnDisable()
+    {
+    }
+    public override void OnDestroy()
+    {
+    }
     /// <summary>
     /// 登录按钮点击
     /// </summary>
@@ -48,7 +60,7 @@ public class StartUI : UI
     {
         if (login_panel != null && login_panel.activeSelf == false)
         {
-            center.SetActive(false);
+            ChangeBtnsShow();
             login_panel.SetActive(true);
         }
     }
@@ -57,10 +69,12 @@ public class StartUI : UI
     /// </summary>
     private void AboutClick()
     {
-        print("点击关于");
-        center.SetActive(false);
-        // about_pane
+        ChangeBtnsShow();
+        print("显示关于面板");
     }
+    /// <summary>
+    /// 退出按钮
+    /// </summary>
     private void CloseBtnClick()
     {
         print("退出");
@@ -70,9 +84,16 @@ public class StartUI : UI
         Application.Quit();
 #endif
     }
+    /// <summary>
+    /// 按钮组显示状态改变
+    /// </summary>
+    public void ChangeBtnsShow()
+    {
+        center.SetActive(center.activeSelf == false);
+    }
 }
 
-public class AboutPanel
+public class AboutPanel : UIElement
 {
 
 }

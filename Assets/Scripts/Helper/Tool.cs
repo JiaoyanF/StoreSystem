@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.IO;
+using System.Text;
 
 /// <summary>
 /// 工具类
@@ -40,7 +42,7 @@ public class Tool
     /// <param name="trans">父物体</param>
     /// <param name="goName">子物体的名称</param>
     /// <returns>找到的相应子物体</returns>
-    public static T FindChild<T>(Transform trans, string goName) where T : Obj
+    public static T FindChild<T>(Transform trans, string goName) where T : Component
     {
         Transform child = trans.Find(goName);
         if (child != null)
@@ -166,6 +168,7 @@ public class Log
 {
     public static void Debug(string con, params object[] args)
     {
+        if (args == null) { return; }
         if (args.Length == 0)
         {
             UnityEngine.Debug.Log(con);
@@ -180,5 +183,31 @@ public class Log
             string[] str = (string[])list.ToArray(typeof(string));
             UnityEngine.Debug.Log(con + " = " + String.Join(",", str));
         }
+    }
+}
+// 本地信息
+public class Localization
+{
+    private static Map<string, string> Lang = new Map<string, string>();
+    public static void LoadLang()
+    {
+        string[] strs = File.ReadAllLines(SysDefine.language);
+        foreach (var line in strs)
+        {
+            string[] str = line.Split(new char[] { '\t' });
+            Lang.Add(str[0], str[1]);
+        }
+    }
+    public static string Format(string str)
+    {
+        return Lang[str];
+    }
+    public static string Format(string str, string[] args)
+    {
+        if (string.IsNullOrEmpty(str) || args == null || args.Length == 0)
+            return string.Empty;
+        StringBuilder sb = new StringBuilder();
+        sb.AppendFormat(str, args);
+        return sb.ToString();
     }
 }
