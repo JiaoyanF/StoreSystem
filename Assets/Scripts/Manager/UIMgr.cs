@@ -28,6 +28,7 @@ public class UIMgr : Obj
 
         Root = (GameObject)Resources.Load(SysDefine.PrefabPath + "Root");// 获取根节点
         Root = UnityEngine.Object.Instantiate(Root);
+        Root.name = Root.name.Replace("(Clone)", "");
         UnityEngine.Object.DontDestroyOnLoad(Root);// 切换场景不销毁
         UICamera = Tool.FindChild<Camera>(Root.transform, "Camera");
         

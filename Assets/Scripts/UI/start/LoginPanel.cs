@@ -11,28 +11,28 @@ public class LoginPanel : UIElement
     InputField un_input;
     InputField ps_input;
 
-    public override void Initialize()
+    protected override void Initialize()
     {
         un_input = GetControl<InputField>(Get(this, "un_input"));
         ps_input = GetControl<InputField>(Get(this, "ps_input"));
     }
-    public override void RegEvents()
+    protected override void RegEvents()
     {
         // base.RegEvents();
         SetBtnEvent(Get(this, "mask"), MaskClick);
         SetBtnEvent(Get(this, "login"), LoadData);
         SetBtnEvent(Get(this, "reset"), ResetData);
     }
-    public override void OnEnable()
+    protected override void OnEnable()
     {
     }
-    public override void OnUpdata()
+    protected override void OnUpdata()
     {
     }
-    public override void OnDisable()
+    protected override void OnDisable()
     {
     }
-    public override void OnDestroy()
+    protected override void OnDestroy()
     {
     }
     /// <summary>

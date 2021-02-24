@@ -34,6 +34,9 @@ public class ResourcesMgr : Obj
             Debug.LogError(GetType() + "克隆资源不成功，path = " + SysDefine.PrefabPath + ui_name);
             return;
         }
+        // 为了避免OnEnable先于InitDta执行↓
+        Asset.gameObject.SetActive(false);
+        
         Type type = Type.GetType(ui_name + "UI");
         this.UIMgr = ui_mgr;
         this.UIName = ui_name;

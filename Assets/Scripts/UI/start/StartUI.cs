@@ -20,7 +20,7 @@ public class StartUI : UI
     private LoginPanel loginPanel;// 登录面板实例
     private AboutPanel aboutPanel;// 关于面板实例
 
-    public override void Initialize()
+    protected override void Initialize()
     {
         title = Get(this, "title");
         center = Get(this, "center");
@@ -30,27 +30,26 @@ public class StartUI : UI
         login_panel = Get(this, "LoginPanel");
         bg = Get(this, "bg");
 
-        Log.Debug("context", context);
-        SetText<Text>(title, context[0].ToString());
-
         loginPanel = NewElement(this, login_panel) as LoginPanel;// 实例化登录面板
     }
-    public override void RegEvents()
+    protected override void RegEvents()
     {
         SetBtnEvent(login_btn, LoginBtnClick);
         SetBtnEvent(about_btn, AboutClick);
         SetBtnEvent(close_btn, CloseBtnClick);
     }
-    public override void OnEnable()
+    protected override void OnEnable()
+    {
+        Log.Debug("context", context);
+        SetText<Text>(title, context[0].ToString());
+    }
+    protected override void OnUpdata()
     {
     }
-    public override void OnUpdata()
+    protected override void OnDisable()
     {
     }
-    public override void OnDisable()
-    {
-    }
-    public override void OnDestroy()
+    protected override void OnDestroy()
     {
     }
     /// <summary>

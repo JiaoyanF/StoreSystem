@@ -13,22 +13,22 @@ public class SettleAccountsUI : UI
 {
     public override UILayer Layer { get { return UILayer.Normal; } }
     private GameObject item;
-    public override void Initialize()
+    protected override void Initialize()
     {
     }
-    public override void RegEvents()
+    protected override void RegEvents()
     {
     }
-    public override void OnEnable()
+    protected override void OnEnable()
     {
     }
-    public override void OnUpdata()
+    protected override void OnUpdata()
     {
     }
-    public override void OnDisable()
+    protected override void OnDisable()
     {
     }
-    public override void OnDestroy()
+    protected override void OnDestroy()
     {
     }
 }

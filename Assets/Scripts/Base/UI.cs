@@ -69,40 +69,39 @@ public abstract class UI : MonoBehaviour
     protected void Awake()
     {
         HashID = this.GetHashCode();
+        Initialize();
+        RegEvents();
     }
+    
+    /// <summary>
+    /// 初始化
+    /// </summary>
+    protected virtual void Initialize() { }
+    /// <summary>
+    /// 注册事件
+    /// </summary>
+    protected virtual void RegEvents() { }
+    protected virtual void Start() { }
+    /// <summary>
+    /// 打开面板
+    /// </summary>
+    protected virtual void OnEnable() { }
     protected void Updata()
     {
         OnUpdata();
     }
-    public virtual void Start()
-    {
-        Initialize();
-        RegEvents();
-    }
-    /// <summary>
-    /// 初始化
-    /// </summary>
-    public virtual void Initialize() { }
-    /// <summary>
-    /// 注册事件
-    /// </summary>
-    public virtual void RegEvents() { }
-    /// <summary>
-    /// 打开面板
-    /// </summary>
-    public virtual void OnEnable() { }
     /// <summary>
     /// 帧刷新
     /// </summary>
-    public virtual void OnUpdata() { }
+    protected virtual void OnUpdata() { }
     /// <summary>
     /// 关闭面板
     /// </summary>
-    public virtual void OnDisable() { }
+    protected virtual void OnDisable() { }
     /// <summary>
     /// 销毁面板
     /// </summary>
-    public virtual void OnDestroy() { }
+    protected virtual void OnDestroy() { }
 
     public void Show()
     {
