@@ -30,6 +30,8 @@ public class StartUI : UI
         login_panel = Get(this, "LoginPanel");
         bg = Get(this, "bg");
 
+        // FireEvent(new Events.Net.SendMessage("运行系统"));
+
         loginPanel = NewElement(this, login_panel) as LoginPanel;// 实例化登录面板
     }
     protected override void RegEvents()

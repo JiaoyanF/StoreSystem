@@ -184,6 +184,15 @@ public class Log
             UnityEngine.Debug.Log(con + " = " + String.Join(",", str));
         }
     }
+    public static void Format(string con, params object[] args)
+    {
+        string str = "";
+        foreach (var item in args)
+        {
+            str = String.Format(con, item.ToString());
+        }
+        Log.Debug(str);
+    }
 }
 // 本地信息
 public class Localization

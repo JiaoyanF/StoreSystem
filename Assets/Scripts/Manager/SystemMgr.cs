@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Net.Sockets;
 using MySql.Data.MySqlClient;
 
 /// <summary>
@@ -10,7 +11,7 @@ using MySql.Data.MySqlClient;
 public class SystemMgr : EventMgr
 {
     public SystemMgr own { get; private set; }// 自身单例
-    private Map<Type, Obj> Managers  = new Map<Type, Obj>();// 管理器单例们
+    private Map<Type, Obj> Managers = new Map<Type, Obj>();// 管理器单例们
     public void Launch(SystemMgr own)
     {
         this.own = own;
@@ -19,7 +20,8 @@ public class SystemMgr : EventMgr
 
     public void Start()
     {
-        LoadDatabase();
+        // LoadDatabase();
+        GetSingleT<NetMgr>();// 网络管理器
         GetSingleT<ResourcesMgr>();// 创建资源管理器
         GetSingleT<UIMgr>();// 创建ui管理器
     }
@@ -33,7 +35,7 @@ public class SystemMgr : EventMgr
         // server=127.0.0.1/localhost 代表本机，端口号port默认是3306可以不写
         MySqlConnection conn = new MySqlConnection(connetStr);
         try
-        {    
+        {
             conn.Open();//打开通道，建立连接，可能出现异常,使用try catch语句
             Log.Debug("连接数据库成功");
             //在这里使用代码对数据库进行增删查改

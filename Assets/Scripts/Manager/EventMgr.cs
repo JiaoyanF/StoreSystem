@@ -15,7 +15,7 @@ public class EventMgr
 
     public delegate void OnEventRecv(Obj sender, Event e);
     public delegate void OnEventRecv<T>(Obj sender, T e);
-    
+
     public void FireEvent(Obj sender, ref Event e)
     {
         HandlerGroup g;
@@ -194,6 +194,24 @@ public static class Events
             {
                 this.UI = ui;
                 this.Args = args;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 网络事件
+    /// </summary>
+    public struct Net
+    {
+        /// <summary>
+        /// 发送消息
+        /// </summary>
+        public struct SendMessage : Event
+        {
+            public string Con;
+            public SendMessage(string con)
+            {
+                this.Con = con;
             }
         }
     }
