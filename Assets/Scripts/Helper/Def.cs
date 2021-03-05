@@ -57,16 +57,12 @@ public enum Gender
 /// <summary>
 /// 商品类型
 /// </summary> 
-public enum MerchandiseType
+public enum GoodsType
 {
-    Commodity,// 日用品
+    Snacks,// 零食
     Drinks,// 酒水
-    Fresh,// 生鲜
-    Food,// 食品
-    Appliance,// 家用电器
-    Furniture,// 家具
-    Stationery,// 文具、图书
-    Clothing,// 服装
+    Commodity,// 日用品
+    Other,// 其他
 }
 
 /// <summary>
@@ -82,7 +78,7 @@ public enum OperationType
 /// <summary>
 /// 员工权限
 /// </summary>
-public enum StaffRightsType
+public enum StaffPowerType
 {
     Admin,// 管理员
     Ordinary,// 普通员工
@@ -95,7 +91,8 @@ public enum StaffRightsType
 public enum StaffPostType
 {
     Cashier,// 收银员
-    Guide,// 导购
+    Tally,// 理货员
+    Storage,// 仓库管理员
 }
 
 /// <summary>

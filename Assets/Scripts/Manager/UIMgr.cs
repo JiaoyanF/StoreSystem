@@ -18,6 +18,7 @@ public class UIMgr : Obj
     public GameObject Root;// 根节点
     public UI ui;
     public ResourcesMgr ResMgr;// 资源管理器
+    public NetMgr NetMgr;// 网络管理器
     public Camera UICamera { private set; get; }// ui主相机
 
     public override void Awake()
@@ -25,6 +26,7 @@ public class UIMgr : Obj
         base.Awake();
 
         ResMgr = system_mgr.GetSingleT<ResourcesMgr>();
+        NetMgr = system_mgr.GetSingleT<NetMgr>();
 
         Root = (GameObject)Resources.Load(SysDefine.PrefabPath + "Root");// 获取根节点
         Root = UnityEngine.Object.Instantiate(Root);

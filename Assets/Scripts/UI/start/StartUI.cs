@@ -30,8 +30,6 @@ public class StartUI : UI
         login_panel = Get(this, "LoginPanel");
         bg = Get(this, "bg");
 
-        FireEvent(new Events.Net.SendMessage("进入开始界面"));
-
         loginPanel = NewElement(this, login_panel) as LoginPanel;// 实例化登录面板
     }
     protected override void RegEvents()
@@ -79,6 +77,7 @@ public class StartUI : UI
     private void CloseBtnClick()
     {
         print("退出");
+        NetMgr.CloseNet();
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else

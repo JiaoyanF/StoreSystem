@@ -5,9 +5,13 @@ using System.Threading;
 using System.Text;
 using UnityEngine;
 
+/// <summary>
+/// 网络连接管理
+/// </summary>
 public class NetMgr : Obj
 {
     Socket conn;// 连接
+    Thread receiveThread;// 接收消息线程
     private static byte[] bytes = new byte[1024];// 消息字节组
 
     public override void Awake()
@@ -17,16 +21,16 @@ public class NetMgr : Obj
     }
     protected override void RegEvents()
     {
-        RegEventHandler<Events.Net.SendMessage>(SendMessage);// 发送消息事件
     }
 
     /// <summary>
     /// 建立连接
     /// </summary>
-    public void Connect()
+    private void Connect()
     {
         conn = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         IPAddress Host = IPAddress.Parse("119.29.65.81");
+        // IPAddress Host = IPAddress.Parse("127.0.0.1");
         int Post = 522;
         // 把IP和端口号集成在一个网络端点中
         IPEndPoint endpoint = new IPEndPoint(Host, Post);
@@ -36,7 +40,7 @@ public class NetMgr : Obj
             conn.Connect(endpoint);
 
             // 创建接收消息线程
-            Thread receiveThread = new Thread(ReceiveMessages);
+            receiveThread = new Thread(ReceiveMessages);
             receiveThread.Start();
         }
         catch (SocketException e)
@@ -49,24 +53,26 @@ public class NetMgr : Obj
         }
     }
 
-    /// <summary>
-    /// 发送消息
-    /// </summary>
-    public void SendMessage(Obj sender, Events.Net.SendMessage e)
+    public void SendMessage(string tag, params string[] args)
     {
-        Log.Format("发送：{0}", e.Con);
-        conn.Send(Encoding.UTF8.GetBytes(e.Con));
+        string str = tag + "#" + string.Join(",", args);
+        Log.Format("发送：{0}", str);
+        conn.Send(Encoding.UTF8.GetBytes(str));
     }
 
     /// <summary>
     /// 接收消息
     /// </summary>
-    public void ReceiveMessages()
+    private void ReceiveMessages()
     {
         while (true)
         {
             int receiveNumber = conn.Receive(bytes);
             string strContent = Encoding.UTF8.GetString(bytes, 0, receiveNumber);
+            if (strContent == "" | strContent == null)
+            {
+                CloseNet();
+            }
             Log.Format("接收：{0}", strContent);
         }
     }
@@ -76,7 +82,21 @@ public class NetMgr : Obj
     /// </summary>
     public void CloseNet()
     {
-        FireEvent(new Events.Net.SendMessage("exit"));
+        conn.Send(Encoding.UTF8.GetBytes("exit"));
+        Log.Debug("断开连接");
+        receiveThread.Abort();
         conn.Close();
+    }
+}
+
+/// <summary>
+/// 网络事件相关
+/// </summary>
+public struct NetTag
+{
+    public struct Login
+    {
+        public const string Req_Login = "login:request";// 登录请求
+        public const string Resp_Login = "login:response";// 登录响应
     }
 }

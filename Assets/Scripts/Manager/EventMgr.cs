@@ -203,16 +203,6 @@ public static class Events
     /// </summary>
     public struct Net
     {
-        /// <summary>
-        /// 发送消息
-        /// </summary>
-        public struct SendMessage : Event
-        {
-            public string Con;
-            public SendMessage(string con)
-            {
-                this.Con = con;
-            }
-        }
+        // 断开事件、连接事件等
     }
 }

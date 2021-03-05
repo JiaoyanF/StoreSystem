@@ -19,6 +19,7 @@ public abstract class UI : MonoBehaviour
     private GameObject Asset;
     private int HashID;
     private Map<int, UIElement> child = new Map<int, UIElement>();// 子元素
+    public NetMgr NetMgr { get { return ui_mgr.NetMgr; } }
 
     public void InitData(ResourcesMgr res)
     {
@@ -72,7 +73,7 @@ public abstract class UI : MonoBehaviour
         Initialize();
         RegEvents();
     }
-    
+
     /// <summary>
     /// 初始化
     /// </summary>

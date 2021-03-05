@@ -40,19 +40,14 @@ public class LoginPanel : UIElement
     /// </summary> 
     private void LoadData()
     {
-        // 判断账户密码正确
-        if (un_input.text == "000" && ps_input.text == "000")
+        if (un_input.text == "" || ps_input.text == "")
         {
             ResetData();
-            Log.Debug("成功登录");
-            FireEvent(new Events.UI.OpenUI("MainForm"));
+            Log.Debug("数据不完整");
+            return;
+            // FireEvent(new Events.UI.OpenUI("MainForm"));
         }
-        else
-        {
-            Log.Debug("登录失败");
-            un_input.text = "000";
-            ps_input.text = "000";
-        }
+        Root.NetMgr.SendMessage(NetTag.Login.Req_Login, un_input.text, ps_input.text);
     }
     /// <summary>
     /// 重置
