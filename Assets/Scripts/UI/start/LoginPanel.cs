@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 /// <summary>
 /// 登录面板
@@ -22,6 +23,7 @@ public class LoginPanel : UIElement
         SetBtnEvent(Get(this, "mask"), MaskClick);
         SetBtnEvent(Get(this, "login"), LoadData);
         SetBtnEvent(Get(this, "reset"), ResetData);
+        Root.NetMgr.RegEvent(NetTag.Login.Resp_Login, LoginResult);
     }
     protected override void OnEnable()
     {
@@ -45,9 +47,22 @@ public class LoginPanel : UIElement
             ResetData();
             Log.Debug("数据不完整");
             return;
-            // FireEvent(new Events.UI.OpenUI("MainForm"));
         }
         Root.NetMgr.SendMessage(NetTag.Login.Req_Login, un_input.text, ps_input.text);
+    }
+    /// <summary>
+    /// 登录结果
+    /// </summary>
+    /// <param name="con"></param>
+    private void LoginResult(Map<string, string> con)
+    {
+        if (Convert.ToBoolean(con["result"]))
+        {
+            FireEvent(new Events.UI.OpenUI("MainForm"));
+        }else
+        {
+            Log.Debug(con["reason"]);
+        }
     }
     /// <summary>
     /// 重置
@@ -59,7 +74,6 @@ public class LoginPanel : UIElement
     }
     private void MaskClick()
     {
-        Log.Debug("重置数据，关闭登录面板");
         ResetData();
         (Root as StartUI).ChangeBtnsShow();
         this.gameObject.SetActive(false);

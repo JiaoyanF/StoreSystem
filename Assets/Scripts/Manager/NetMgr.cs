@@ -3,7 +3,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Text;
-using UnityEngine;
+using Newtonsoft.Json;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 /// <summary>
 /// 网络连接管理
@@ -13,6 +15,9 @@ public class NetMgr : Obj
     Socket conn;// 连接
     Thread receiveThread;// 接收消息线程
     private static byte[] bytes = new byte[1024];// 消息字节组
+    private Map<Type, NetEventHandler> Events = new Map<Type, NetEventHandler>();
+
+    public delegate void NetEventRecv(Map<string, string> context);// 网络事件回调
 
     public override void Awake()
     {
@@ -29,8 +34,8 @@ public class NetMgr : Obj
     private void Connect()
     {
         conn = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        IPAddress Host = IPAddress.Parse("119.29.65.81");
-        // IPAddress Host = IPAddress.Parse("127.0.0.1");
+        // IPAddress Host = IPAddress.Parse("119.29.65.81");
+        IPAddress Host = IPAddress.Parse("127.0.0.1");
         int Post = 522;
         // 把IP和端口号集成在一个网络端点中
         IPEndPoint endpoint = new IPEndPoint(Host, Post);
@@ -74,7 +79,31 @@ public class NetMgr : Obj
                 CloseNet();
             }
             Log.Format("接收：{0}", strContent);
+            if (strContent.Contains("#"))
+            {
+                system_mgr.Loom.AddNetWork(strContent);
+                // string[] strs = Regex.Split(strContent, "#");
+                // FireEvent(strs[0], strs[1]);
+            }
         }
+    }
+    public void FireEvent(string tag, string context)
+    {
+        Type type = tag.GetType();
+        if (Events.ContainsKey(type))
+        {
+            Events[type].Call(context);
+        }else
+        {
+            Log.Format("协议【{0}】未定义事件", tag);
+        }
+    }
+
+    public void RegEvent(string tag, NetEventRecv action)
+    {
+        Type type = tag.GetType();
+        NetEventHandler net_event = new NetEventHandler(type, action);
+        Events.Add(type, net_event);
     }
 
     /// <summary>
@@ -86,6 +115,36 @@ public class NetMgr : Obj
         Log.Debug("断开连接");
         receiveThread.Abort();
         conn.Close();
+    }
+
+    public interface Handler
+    {
+        Type EventType { get; }
+        void Call(string s);
+    }
+
+    struct NetEventHandler : Handler
+    {
+        private Type eventType;
+        private NetEventRecv recv;
+        public Type EventType { get { return this.eventType; } }
+
+        public NetEventHandler(Type t, NetEventRecv recv)
+        {
+            this.eventType = t;
+            this.recv = recv;
+        }
+        public void Call(string s)
+        {
+            if (recv == null)
+                return;
+            Map<string, string> jsonDict = JsonConvert.DeserializeObject<Map<string, string>>(s);
+            foreach (KeyValuePair<string, string> item in jsonDict)
+            {
+                Log.Debug(String.Format("{0}：{1}", item.Key, item.Value));
+            }
+            recv(jsonDict);
+        }
     }
 }
 

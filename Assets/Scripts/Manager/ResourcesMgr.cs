@@ -46,6 +46,23 @@ public class ResourcesMgr : Obj
         ui.InitData(this);
     }
 
+    public T LoadAsset<T>(SystemMgr sys_mgr, string name)where T : MonoBehaviour
+    {
+        GameObject goObj = LoadResource<GameObject>(name);
+        Asset = GameObject.Instantiate<GameObject>(goObj);
+        Asset.name = name;
+        if (Asset == null)
+        {
+            Debug.LogError(GetType() + "克隆资源不成功，path = " + SysDefine.PrefabPath + name);
+            return null;
+        }
+        
+        Type type = Type.GetType(name);
+        MonoBehaviour mono = Asset.gameObject.AddComponent(type) as MonoBehaviour;// 挂载脚本
+        UnityEngine.Object.DontDestroyOnLoad(mono.transform);// 切换场景不销毁
+        return mono as T;
+    }
+
     /// <summary>
     /// 获取资源
     /// </summary>

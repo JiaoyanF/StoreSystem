@@ -2,8 +2,10 @@
 """
 定义
 """
+Threads = {}
 
-NetTag = {
-    'login:request': '00000',  # 登录请求
-    'login:response': '11111',  # 登录响应
-}
+NetTag = [
+    'login:request',    # 登录请求
+    'login:response',   # 登录响应
+]
+

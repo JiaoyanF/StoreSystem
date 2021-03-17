@@ -76,7 +76,6 @@ public class StartUI : UI
     /// </summary>
     private void CloseBtnClick()
     {
-        print("退出");
         NetMgr.CloseNet();
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
