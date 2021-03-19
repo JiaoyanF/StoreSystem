@@ -21,6 +21,7 @@ def Verify(target, args):
         result['reason'] = "user is null"
     elif cursor[0]['password'] == args[1]:
         result['result'] = True
+        result['user'] = cursor[0]
     else:
         result['reason'] = "password error"
     Event.FireEvent("SendMessage", "login:response", result, tar=target)

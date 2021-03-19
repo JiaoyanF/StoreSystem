@@ -173,6 +173,11 @@ internal struct LinkList
     public int Next;
 }
 
+/// <summary>
+/// 字典拓展
+/// </summary>
+/// <typeparam name="TKey"></typeparam>
+/// <typeparam name="TValue"></typeparam>
 [ComVisible(false)]
 [Serializable]
 [DebuggerDisplay("Count={Count}")]

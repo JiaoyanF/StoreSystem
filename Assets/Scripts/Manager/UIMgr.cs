@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using Def;
 using System;
 
 /// <summary>
@@ -20,6 +22,7 @@ public class UIMgr : Obj
     public ResourcesMgr ResMgr;// 资源管理器
     public NetMgr NetMgr;// 网络管理器
     public Camera UICamera { private set; get; }// ui主相机
+    public RawImage BG;// 背景
 
     public override void Awake()
     {
@@ -33,7 +36,8 @@ public class UIMgr : Obj
         Root.name = Root.name.Replace("(Clone)", "");
         UnityEngine.Object.DontDestroyOnLoad(Root);// 切换场景不销毁
         UICamera = Tool.FindChild<Camera>(Root.transform, "Camera");
-        
+        BG = Tool.FindChild<RawImage>(Root.transform, "BGImg");
+
         FireEvent(new Events.UI.OpenUI("Start", Localization.Format("SYSTEM_NAME"), "111"));
     }
 
@@ -69,7 +73,6 @@ public class UIMgr : Obj
 
     private void OnCreateUIEvent(Obj sender, Events.UI.OpenUI e)
     {
-        Log.Debug("open_ui：" + e.UI);
         LoadUI(e.UI, e.Args);
     }
 

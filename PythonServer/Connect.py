@@ -50,6 +50,7 @@ def ConnectionThread(conn, addr):
         # time.sleep(1)
         if data.decode('utf-8') == 'exit' or not data:
             print('*{0}请求断开连接'.format(tar))
+            SendMessage(tar, "exit")
             break
         ReceiveMessages(tar, data.decode('utf-8'))
     CloseNet(conn)

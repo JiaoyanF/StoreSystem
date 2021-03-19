@@ -2322,7 +2322,7 @@ GameObject:
   - component: {fileID: 3760520373785010310}
   - component: {fileID: 7896638330649493661}
   m_Layer: 5
-  m_Name: StartUI
+  m_Name: Start
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

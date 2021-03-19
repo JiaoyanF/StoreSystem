@@ -4,6 +4,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using Def;
 
 /// <summary>
 /// ui基类
@@ -87,14 +88,14 @@ public abstract class UI : MonoBehaviour
     /// 打开面板
     /// </summary>
     protected virtual void OnEnable() { }
-    protected void Updata()
+    protected void Update()
     {
-        OnUpdata();
+        OnUpdate();
     }
     /// <summary>
     /// 帧刷新
     /// </summary>
-    protected virtual void OnUpdata() { }
+    protected virtual void OnUpdate() { }
     /// <summary>
     /// 关闭面板
     /// </summary>
@@ -107,20 +108,21 @@ public abstract class UI : MonoBehaviour
     public void Show()
     {
         ui_mgr.ShowUI(this);
-        SetActive(true);
+        SetActive(this, true);
     }
     public void Close()
     {
         ui_mgr.CloseUI(this);
-        SetActive(false);
+        SetActive(this, false);
         Destroy(Asset);
     }
-    public void SetActive(bool active)
+    public void SetActive<T>(T obj, bool active) where T : Component
     {
-        if (this.gameObject)
-        {
-            this.gameObject.SetActive(active);
-        }
+        obj.gameObject.SetActive(active);
+    }
+    public void SetActive(GameObject obj, bool active)
+    {
+        obj.SetActive(active);
     }
 
     #endregion
@@ -132,13 +134,39 @@ public abstract class UI : MonoBehaviour
         this.ui_mgr.FireEvent(e);
     }
 
-    public UIElement NewElement<T>(T root, GameObject obj)
+    /// <summary>
+    /// 创建UI子脚本
+    /// </summary>
+    /// <param name="root">主UI</param>
+    /// <param name="obj">子对象</param>
+    /// <typeparam name="T">子对象类</typeparam>
+    /// <returns></returns>
+    public T NewElement<T>(UI root, GameObject obj) where T : UIElement
     {
         Type type = Type.GetType(obj.gameObject.name);
         UIElement ele = obj.gameObject.AddComponent(type) as UIElement;
-        ele.Root = root as UI;
+        ele.Root = root;
         child.Add(ele.HashID, ele);
-        return ele;
+        return ele as T;
+    }
+
+    /// <summary>
+    /// 更改背景图片
+    /// </summary>
+    /// <param name="img_name"></param>
+    public void ChangeBG(string img_name)
+    {
+        Texture2D tex = ui_mgr.ResMgr.LoadRamImage<Texture2D>(img_name);
+        ui_mgr.BG.texture = tex;
+    }
+
+    /// <summary>
+    /// 设置背景显示与否
+    /// </summary>
+    /// <param name="is_show"></param>
+    public void ShowBG(bool is_show)
+    {
+        SetActive(ui_mgr.BG.transform.parent, is_show);
     }
 
     /// <summary>
@@ -156,19 +184,37 @@ public abstract class UI : MonoBehaviour
     }
 
     /// <summary>
+    /// 获取root子物体有T控件的物体组件列表
+    /// </summary>
+    /// <param name="root"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public List<T> GetComponentChild<T>(GameObject root) where T : Component
+    {
+        List<T> list = new List<T>();
+        foreach (Transform item in root.transform)
+        {
+            T conn = GetControl<T>(item.gameObject);
+            if (conn != null)
+            {
+                list.Add(conn);
+            }
+        }
+        return list;
+    }
+
+    /// <summary>
     /// 获取物体控件
     /// </summary> 
     /// <param name="own">父</param>
     /// <param name="target">目标名</param>
-    public T GetControl<T, U>(U own, string target)
-    where U : UI, new()
-    where T : Component
+    public T GetControl<T, U>(U own, string target) where U : UI, new() where T : Component
     {
         return Tool.FindChild(own.transform, target).gameObject.GetComponent<T>();
     }
     public T GetControl<T>(GameObject own) where T : Component
     {
-        return own.gameObject.GetComponent<T>();
+        return own.GetComponent<T>();
     }
 
     /// <summary>
@@ -179,6 +225,10 @@ public abstract class UI : MonoBehaviour
     public void SetBtnEvent(GameObject btn, UnityAction func)
     {
         btn.GetComponent<Button>().onClick.AddListener(func);
+    }
+    public void SetBtnEvent(Button btn, UnityAction func)
+    {
+        btn.onClick.AddListener(func);
     }
 
     /// <summary>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using Def;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 
@@ -12,29 +13,78 @@ using UnityEngine.Events;
 public class MainFormUI : UI
 {
     public override UILayer Layer { get { return UILayer.Full; } }
-    private GameObject item;
+    private Button Sales;
+    private Button GoodsMan;
+    private Button VipMan;
+    private Button StaffMan;
+    private Button About;
+    Map<Button, List<Button>> Btns = new Map<Button, List<Button>>();
     protected override void Initialize()
     {
-        item = Get(this, "item");
-    }
-    private void ShowContext()
-    {
-        FireEvent(new Events.UI.OpenUI("SettleAccounts"));
+        Sales = GetControl<Button>(Get(this, "Sales"));
+        GoodsMan = GetControl<Button>(Get(this, "GoodsMan"));
+        VipMan = GetControl<Button>(Get(this, "VipMan"));
+        StaffMan = GetControl<Button>(Get(this, "StaffMan"));
+        About = GetControl<Button>(Get(this, "About"));
+
+        ShowBG(true);
+        ChangeBG("MainBG");
+        GetBtns(StaffMan);
+        GetBtns(About);
     }
     protected override void RegEvents()
     {
-        SetBtnEvent(item, ShowContext);
+        TitleBtnClickEvent();
+        SubBtnClickEvent();
     }
-    protected override void OnEnable()
+    /// <summary>
+    /// 获取标题组
+    /// </summary>
+    /// <param name="title_btn"></param>
+    public void GetBtns(Button title_btn)
     {
+        GameObject con = Get(title_btn.gameObject, "Context");
+        List<Button> lis = GetComponentChild<Button>(con);
+        Btns.Add(title_btn, lis);
     }
-    protected override void OnUpdata()
+    /// <summary>
+    /// 标题导航按钮点击事件
+    /// </summary>
+    private void TitleBtnClickEvent()
     {
+        foreach (var item in Btns)
+        {
+            GameObject con = Get(item.Key.gameObject, "Context");
+            SetBtnEvent(item.Key, delegate ()
+            {
+                SetActive(con, true);
+            });
+        }
     }
-    protected override void OnDisable()
+    public void SubBtnClickEvent()
     {
+        List<Button> child_btn = Btns[About];
+        SetBtnEvent(child_btn[3], ui_mgr.system_mgr.Loom.ExitSystem);
     }
-    protected override void OnDestroy()
+    protected override void OnEnable() { }
+    protected override void OnUpdate()
     {
+        if (Input.GetMouseButtonDown(0))
+        {
+            HideSubpanel();
+        }
     }
+    /// <summary>
+    /// 隐藏展开菜单
+    /// </summary>
+    private void HideSubpanel()
+    {
+        foreach (var item in Btns)
+        {
+            GameObject con = Get(item.Key.gameObject, "Context");
+            SetActive(con, false);
+        }
+    }
+    protected override void OnDisable() { }
+    protected override void OnDestroy() { }
 }

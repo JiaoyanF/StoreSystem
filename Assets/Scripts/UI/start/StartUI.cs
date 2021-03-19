@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using Def;
 
 /// <summary>
 /// 启动面板
@@ -30,7 +31,7 @@ public class StartUI : UI
         login_panel = Get(this, "LoginPanel");
         bg = Get(this, "bg");
 
-        loginPanel = NewElement(this, login_panel) as LoginPanel;// 实例化登录面板
+        loginPanel = NewElement<LoginPanel>(this, login_panel);// 实例化登录面板
     }
     protected override void RegEvents()
     {
@@ -40,10 +41,9 @@ public class StartUI : UI
     }
     protected override void OnEnable()
     {
-        Log.Debug("context", context);
         SetText<Text>(title, context[0].ToString());
     }
-    protected override void OnUpdata()
+    protected override void OnUpdate()
     {
     }
     protected override void OnDisable()
@@ -76,12 +76,7 @@ public class StartUI : UI
     /// </summary>
     private void CloseBtnClick()
     {
-        NetMgr.CloseNet();
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+        ui_mgr.system_mgr.Loom.ExitSystem();
     }
     /// <summary>
     /// 按钮组显示状态改变

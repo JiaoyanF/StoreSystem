@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Text;
 using Newtonsoft.Json;
+using LitJson;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
@@ -17,7 +18,8 @@ public class NetMgr : Obj
     private static byte[] bytes = new byte[1024];// 消息字节组
     private Map<Type, NetEventHandler> Events = new Map<Type, NetEventHandler>();
 
-    public delegate void NetEventRecv(Map<string, string> context);// 网络事件回调
+    public delegate void NetEventRecv(JsonData context);// 网络事件回调
+    bool is_connect;
 
     public override void Awake()
     {
@@ -43,6 +45,7 @@ public class NetMgr : Obj
         {
             // 连接
             conn.Connect(endpoint);
+            is_connect = true;
 
             // 创建接收消息线程
             receiveThread = new Thread(ReceiveMessages);
@@ -74,16 +77,15 @@ public class NetMgr : Obj
         {
             int receiveNumber = conn.Receive(bytes);
             string strContent = Encoding.UTF8.GetString(bytes, 0, receiveNumber);
-            if (strContent == "" | strContent == null)
+            if (strContent == "" | strContent == null | strContent == "exit")
             {
+                is_connect = false;
                 CloseNet();
             }
             Log.Format("接收：{0}", strContent);
             if (strContent.Contains("#"))
             {
                 system_mgr.Loom.AddNetWork(strContent);
-                // string[] strs = Regex.Split(strContent, "#");
-                // FireEvent(strs[0], strs[1]);
             }
         }
     }
@@ -111,10 +113,13 @@ public class NetMgr : Obj
     /// </summary>
     public void CloseNet()
     {
-        conn.Send(Encoding.UTF8.GetBytes("exit"));
-        Log.Debug("断开连接");
-        receiveThread.Abort();
-        conn.Close();
+        if (is_connect)
+        {
+            conn.Send(Encoding.UTF8.GetBytes("exit"));
+            Log.Debug("断开连接");
+            receiveThread.Abort();
+            conn.Close();
+        }
     }
 
     public interface Handler
@@ -138,12 +143,11 @@ public class NetMgr : Obj
         {
             if (recv == null)
                 return;
-            Map<string, string> jsonDict = JsonConvert.DeserializeObject<Map<string, string>>(s);
-            foreach (KeyValuePair<string, string> item in jsonDict)
-            {
-                Log.Debug(String.Format("{0}：{1}", item.Key, item.Value));
-            }
-            recv(jsonDict);
+            JsonData jsonData = JsonMapper.ToObject(s);
+            // Map<string, object> jsonDict = JsonConvert.DeserializeObject<Map<string, object>>(s);
+            // foreach (KeyValuePair<string, object> item in jsonDict)
+            //     Log.Debug(String.Format("{0}：{1}", item.Key, item.Value));
+            recv(jsonData);
         }
     }
 }
@@ -157,5 +161,10 @@ public struct NetTag
     {
         public const string Req_Login = "login:request";// 登录请求
         public const string Resp_Login = "login:response";// 登录响应
+    }
+    public struct Data
+    {
+        public const string Req_UserData = "user:get_data";// 请求：用户数据
+        public const string Resp_UserData = "user:data";// 响应：用户数据
     }
 }

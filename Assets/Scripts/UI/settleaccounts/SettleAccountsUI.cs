@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using Def;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 
@@ -22,7 +23,7 @@ public class SettleAccountsUI : UI
     protected override void OnEnable()
     {
     }
-    protected override void OnUpdata()
+    protected override void OnUpdate()
     {
     }
     protected override void OnDisable()

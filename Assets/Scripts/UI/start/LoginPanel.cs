@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using Tar;
+using LitJson;
+using System.Linq;
 
 /// <summary>
 /// 登录面板
@@ -28,11 +31,16 @@ public class LoginPanel : UIElement
     protected override void OnEnable()
     {
     }
-    protected override void OnUpdata()
+    protected override void OnUpdate()
     {
+        if (Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
+            LoadData();
+        }
     }
     protected override void OnDisable()
     {
+        ResetData();
     }
     protected override void OnDestroy()
     {
@@ -54,14 +62,19 @@ public class LoginPanel : UIElement
     /// 登录结果
     /// </summary>
     /// <param name="con"></param>
-    private void LoginResult(Map<string, string> con)
+    private void LoginResult(JsonData con)
     {
-        if (Convert.ToBoolean(con["result"]))
+        if (Convert.ToBoolean(con["result"].ToString()))
         {
+            // if (con.ContainsKey("user"))// 为啥没有
+            // {
+            //     // Staff user = new Staff(con["user"].id);
+            //     // Root.ui_mgr.system_mgr.Loom.LoginUser(user);
+            // }
             FireEvent(new Events.UI.OpenUI("MainForm"));
         }else
         {
-            Log.Debug(con["reason"]);
+            Log.Format("登录失败：{0}", con["reason"].ToString());
         }
     }
     /// <summary>
@@ -74,7 +87,6 @@ public class LoginPanel : UIElement
     }
     private void MaskClick()
     {
-        ResetData();
         (Root as StartUI).ChangeBtnsShow();
         this.gameObject.SetActive(false);
     }

@@ -27,12 +27,14 @@ def ConnectDB():
 
 # 执行sql语句
 def Execute(target, source):
+    CheckDB()
     global cursor, db
     cursor.execute("select {0} form {1}".format(target, source))
 
 
 # 添加数据
 def AddData(args):
+    CheckDB()
     global cursor, db
     cursor.execute("select * from %s" % args[0])
     fields = cursor.description
@@ -63,6 +65,7 @@ def AddData(args):
 
 # 修改数据
 def UpData(args):
+    CheckDB()
     global cursor, db
     print("修改数据:".format(args))
     num = cursor.execute("update %s where %s = %s" % (args[0], args[1], args[2]))
@@ -71,6 +74,7 @@ def UpData(args):
 
 # 删除数据
 def DeleteData(args):
+    CheckDB()
     global cursor, db
     lis = FindData(args)
     print("删除数据:{0}".format(lis))
@@ -79,6 +83,7 @@ def DeleteData(args):
 
 # 查找数据
 def FindData(args):
+    CheckDB()
     print("查询参数：{0}".format(args))
     global cursor, db
     if len(args) > 1:
@@ -86,6 +91,12 @@ def FindData(args):
     else:
         cursor.execute("select * from %s" % args[0])
     return cursor.fetchall()
+
+
+def CheckDB():
+    global cursor, db
+    if cursor is None:
+        ConnectDB()
 
 
 # 关闭数据库

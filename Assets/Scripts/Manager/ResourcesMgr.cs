@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Def;
 
 /// <summary>
 /// 资源加载管理器
@@ -26,7 +27,7 @@ public class ResourcesMgr : Obj
     /// </summary>
     public void LoadAsset(UIMgr ui_mgr, string ui_name, params object[] args)
     {
-        GameObject goObj = LoadResource<GameObject>(ui_name);
+        GameObject goObj = LoadPrefab<GameObject>(ui_name);
         Asset = GameObject.Instantiate<GameObject>(goObj);
         Asset.name = ui_name;
         if (Asset == null)
@@ -36,7 +37,7 @@ public class ResourcesMgr : Obj
         }
         // 为了避免OnEnable先于InitDta执行↓
         Asset.gameObject.SetActive(false);
-        
+
         Type type = Type.GetType(ui_name + "UI");
         this.UIMgr = ui_mgr;
         this.UIName = ui_name;
@@ -46,9 +47,9 @@ public class ResourcesMgr : Obj
         ui.InitData(this);
     }
 
-    public T LoadAsset<T>(SystemMgr sys_mgr, string name)where T : MonoBehaviour
+    public T LoadAsset<T>(SystemMgr sys_mgr, string name) where T : MonoBehaviour
     {
-        GameObject goObj = LoadResource<GameObject>(name);
+        GameObject goObj = LoadPrefab<GameObject>(name);
         Asset = GameObject.Instantiate<GameObject>(goObj);
         Asset.name = name;
         if (Asset == null)
@@ -56,7 +57,7 @@ public class ResourcesMgr : Obj
             Debug.LogError(GetType() + "克隆资源不成功，path = " + SysDefine.PrefabPath + name);
             return null;
         }
-        
+
         Type type = Type.GetType(name);
         MonoBehaviour mono = Asset.gameObject.AddComponent(type) as MonoBehaviour;// 挂载脚本
         UnityEngine.Object.DontDestroyOnLoad(mono.transform);// 切换场景不销毁
@@ -64,9 +65,9 @@ public class ResourcesMgr : Obj
     }
 
     /// <summary>
-    /// 获取资源
+    /// 获取预制体资源
     /// </summary>
-    public T LoadResource<T>(string path) where T : UnityEngine.Object
+    public T LoadPrefab<T>(string path) where T : UnityEngine.Object
     {
         if (ht.Contains(path))
         {
@@ -79,5 +80,14 @@ public class ResourcesMgr : Obj
         }
         ht.Add(path, TResource);
         return TResource;
+    }
+    public T LoadRamImage<T>(string img_name)where T : UnityEngine.Object
+    {
+        T ass = Resources.Load<T>(SysDefine.RawImagePath + img_name);
+        if (ass == null)
+        {
+            Debug.LogError(GetType() + "资源找不到，path = " + img_name);
+        }
+        return ass;
     }
 }
