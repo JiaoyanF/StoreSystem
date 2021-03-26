@@ -5,7 +5,7 @@ namespace Tar
     /// </summary>
     public abstract class BaseData
     {
-        public int id;
-        public string name;
+        public int Id;
+        public string Name;
     }
 }

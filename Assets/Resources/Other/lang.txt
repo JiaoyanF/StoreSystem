@@ -1,2 +1,4 @@
 SYSTEM_NAME	商店管理系统
+USER_TITLE	员工：{0}
+TIME_TITLE	日期：{0}
 bbb	哈哈哈

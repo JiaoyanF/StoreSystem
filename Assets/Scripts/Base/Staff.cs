@@ -1,16 +1,22 @@
 using Tar;
 using Def;
+using System;
+using LitJson;
 
 /// <summary>
 /// 使用者
 /// </summary>
 public class Staff : BaseData
 {
-    public PowerType Power;// 权限
-    public PostType Post;// 岗位
-    public Gender Gene;// 性别
-    public Staff(int id)
+    public int Power;// 权限
+    public int Post;// 岗位
+    public int Gene;// 性别
+    public Staff(JsonData json)
     {
-        this.id = id;
+        this.Id = Convert.ToInt32(json["id"].ToString());
+        this.Name = json["name"].ToString();
+        this.Power = Convert.ToInt32(json["power"].ToString());
+        this.Post = Convert.ToInt32(json["post"].ToString());
+        this.Gene = Convert.ToInt32(json["gender"].ToString());
     }
 }

@@ -19,7 +19,7 @@ public class NetMgr : Obj
     private Map<Type, NetEventHandler> Events = new Map<Type, NetEventHandler>();
 
     public delegate void NetEventRecv(JsonData context);// 网络事件回调
-    bool is_connect;
+    bool is_connect;// 线程指示灯
 
     public override void Awake()
     {
@@ -73,14 +73,14 @@ public class NetMgr : Obj
     /// </summary>
     private void ReceiveMessages()
     {
-        while (true)
+        while (is_connect)
         {
             int receiveNumber = conn.Receive(bytes);
             string strContent = Encoding.UTF8.GetString(bytes, 0, receiveNumber);
             if (strContent == "" | strContent == null | strContent == "exit")
             {
-                is_connect = false;
                 CloseNet();
+                return;
             }
             Log.Format("接收：{0}", strContent);
             if (strContent.Contains("#"))
@@ -113,13 +113,11 @@ public class NetMgr : Obj
     /// </summary>
     public void CloseNet()
     {
-        if (is_connect)
-        {
-            conn.Send(Encoding.UTF8.GetBytes("exit"));
-            Log.Debug("断开连接");
-            receiveThread.Abort();
-            conn.Close();
-        }
+        is_connect = false;
+        conn.Send(Encoding.UTF8.GetBytes("exit"));
+        Log.Debug("断开连接");
+        receiveThread.Abort();
+        conn.Close();
     }
 
     public interface Handler

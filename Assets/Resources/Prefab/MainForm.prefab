@@ -598,7 +598,7 @@ GameObject:
   - component: {fileID: 5768848596122720352}
   - component: {fileID: 56168977753203472}
   m_Layer: 5
-  m_Name: time
+  m_Name: now_time
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -620,7 +620,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -20, y: 0}
   m_SizeDelta: {x: 400, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &5768848596122720352
@@ -656,7 +656,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 2
     m_MaxSize: 40
-    m_Alignment: 4
+    m_Alignment: 5
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -2661,7 +2661,7 @@ GameObject:
   - component: {fileID: 2123018861630237935}
   - component: {fileID: 1460285072365647841}
   m_Layer: 5
-  m_Name: info
+  m_Name: user_info
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

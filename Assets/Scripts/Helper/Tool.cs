@@ -214,8 +214,9 @@ public class Localization
     {
         return Lang[str];
     }
-    public static string Format(string str, string[] args)
+    public static string Format(string str, params string[] args)
     {
+        str = Lang[str];
         if (string.IsNullOrEmpty(str) || args == null || args.Length == 0)
             return string.Empty;
         StringBuilder sb = new StringBuilder();

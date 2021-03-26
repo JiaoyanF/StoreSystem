@@ -21,6 +21,7 @@ public class UIMgr : Obj
     public UI ui;
     public ResourcesMgr ResMgr;// 资源管理器
     public NetMgr NetMgr;// 网络管理器
+    public Loom Loom { get { return system_mgr.Loom; } }
     public Camera UICamera { private set; get; }// ui主相机
     public RawImage BG;// 背景
 

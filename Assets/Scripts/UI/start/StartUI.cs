@@ -76,7 +76,7 @@ public class StartUI : UI
     /// </summary>
     private void CloseBtnClick()
     {
-        ui_mgr.system_mgr.Loom.ExitSystem();
+        ui_mgr.Loom.ExitSystem();
     }
     /// <summary>
     /// 按钮组显示状态改变

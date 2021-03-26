@@ -1,4 +1,5 @@
 using Tar;
+using LitJson;
 
 /// <summary>
 /// 商品类
@@ -8,8 +9,8 @@ public class Goods : BaseData
     public float price;// 单价
     public int stock;// 库存
     public int num;// 数量（购买
-    public Goods(int id)
+    public Goods(JsonData json)
     {
-        this.id = id;
+        
     }
 }

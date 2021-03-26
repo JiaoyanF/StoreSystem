@@ -66,11 +66,11 @@ public class LoginPanel : UIElement
     {
         if (Convert.ToBoolean(con["result"].ToString()))
         {
-            // if (con.ContainsKey("user"))// 为啥没有
-            // {
-            //     // Staff user = new Staff(con["user"].id);
-            //     // Root.ui_mgr.system_mgr.Loom.LoginUser(user);
-            // }
+            if (Boolean.Parse(con["result"].ToString()))// 为啥没有con.ContainsKey("user")
+            {
+                Staff user = new Staff(con["user"]);
+                Root.ui_mgr.Loom.LoginUser(user);
+            }
             FireEvent(new Events.UI.OpenUI("MainForm"));
         }else
         {
