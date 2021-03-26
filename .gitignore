@@ -1,8 +1,7 @@
 /Library
-
 /Logs
-
 /Temp
 /obj
 /Assembly-CSharp.csproj
+/Assembly-CSharp-Editor.csproj
 /StoreSystem.sln
