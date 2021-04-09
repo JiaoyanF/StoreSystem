@@ -6,7 +6,7 @@ using System.IO;
 using System.Text;
 using Newtonsoft.Json;
 using Def;
-using System.Reflection; 
+using System.Reflection;
 
 /// <summary>
 /// 工具类
@@ -110,7 +110,7 @@ public class UniqueIndex
         this.alloc_index_ = count_;
 
         for (int i = 0; i < count_; i++)
-            this.indexes_[i] = count_ - 1 - i; //小的放后面,从0开始分配
+            this.indexes_[i] = count_ - 1 - i;// 小的放后面,从0开始分配
     }
 
     public void Grow(int n)

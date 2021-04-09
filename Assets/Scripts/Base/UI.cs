@@ -16,9 +16,9 @@ public abstract class UI : MonoBehaviour
     public virtual UILayer Layer { get; }// ui层
     public UIMgr ui_mgr;
     public object[] context; //加载时传入的数据
-    public string Name;// ui名
+    public string Name { get; private set; }// ui名
     private GameObject Asset;
-    private int HashID;
+    public int HashID { get; private set; }
     private Map<int, UIElement> child = new Map<int, UIElement>();// 子元素
     public NetMgr NetMgr { get { return ui_mgr.NetMgr; } }
 
@@ -54,10 +54,10 @@ public abstract class UI : MonoBehaviour
                 this.Canvas.sortingOrder = 1;
                 break;
             case UILayer.Full:
-                this.Canvas.sortingOrder = 0;
+                this.Canvas.sortingOrder = 2;
                 break;
             case UILayer.Tips:
-                this.Canvas.sortingOrder = 2;
+                this.Canvas.sortingOrder = 3;
                 break;
             default:
                 this.Canvas.sortingOrder = 0;
@@ -105,8 +105,10 @@ public abstract class UI : MonoBehaviour
     /// </summary>
     protected virtual void OnDestroy() { }
 
-    public void Show()
+    public void Show(object[] Args = null)
     {
+        if (Args != null)
+            this.context = Args;
         ui_mgr.ShowUI(this);
         SetActive(this, true);
     }
@@ -143,11 +145,11 @@ public abstract class UI : MonoBehaviour
     /// <returns></returns>
     public T NewElement<T>(UI root, GameObject obj) where T : UIElement
     {
-        Type type = Type.GetType(obj.gameObject.name);
-        UIElement ele = obj.gameObject.AddComponent(type) as UIElement;
+        obj.SetActive(false);
+        T ele = Tool.GetOrAddComponent<T>(obj);
         ele.Root = root;
         child.Add(ele.HashID, ele);
-        return ele as T;
+        return ele;
     }
 
     /// <summary>
@@ -174,7 +176,7 @@ public abstract class UI : MonoBehaviour
     /// </summary> 
     /// <param name="own">父</param>
     /// <param name="target">目标</param>
-    public GameObject Get<T>(T own, string target) where T : UI
+    public GameObject Get<T>(T own, string target) where T : Component
     {
         return Tool.FindChild(own.transform, target).gameObject;
     }
@@ -236,13 +238,13 @@ public abstract class UI : MonoBehaviour
     /// </summary> 
     /// <param name="obj">物体</param>
     /// <param name="str">执行方法</param>
-    public void SetText<T>(GameObject obj, string str) where T : Component
+    public void SetText<T>(GameObject obj, object str) where T : Component
     {
-        (obj.GetComponent<T>() as Text).text = str;
+        (obj.GetComponent<T>() as Text).text = str.ToString();
     }
-    public void SetText<T>(T tex, string str) where T : Component
+    public void SetText<T>(T tex, object str) where T : Component
     {
-        (tex as Text).text = str;
+        (tex as Text).text = str.ToString();
     }
 
     #endregion
@@ -251,11 +253,100 @@ public abstract class UI : MonoBehaviour
 /// <summary>
 /// ui元素基类
 /// </summary>
-public abstract class UIElement : UI
+public abstract class UIElement : MonoBehaviour
 {
     public UI Root;// 根节点
-    public override void FireEvent(Event e)
+    public int HashID { get; private set; }
+    private bool initialized = false;
+    private object[] context; //加载时传入的数据
+    protected void Awake()
     {
-        this.Root.ui_mgr.FireEvent(e);
+        HashID = this.GetHashCode();
+        DoInitIfDont();
+    }
+    protected virtual void Initialize() { }
+    protected virtual void RegEvents() { }
+    protected virtual void Start() { }
+    protected virtual void OnEnable() { }
+    protected void Update()
+    {
+        OnUpdate();
+    }
+    protected virtual void OnUpdate() { }
+    protected virtual void OnDisable() { }
+    protected virtual void OnDestroy() { }
+    internal void DoInitIfDont()
+    {
+        if (!initialized)
+        {
+            Initialize();
+            RegEvents();
+            initialized = true;
+        }
+    }
+    public void Show(bool active)
+    {
+        this.enabled = active;
+        if (this.gameObject.activeInHierarchy != active)
+            this.gameObject.SetActive(active);
+    }
+    /// <summary>
+    /// 实例化克隆物体
+    /// </summary>
+    /// <param name="root"></param>
+    /// <param name="sample"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public T Clone<T>(object[] Args = null) where T : UIElement
+    {
+        if (!this.gameObject || !this.transform.parent)
+            return null;
+        this.gameObject.SetActive(false);
+        GameObject item = CreateChild(this.transform.parent.gameObject, this.gameObject);
+        if (!item)
+            return null;
+        // DoInitIfDont();
+        // item.SetActive(false);
+        T ele = Tool.GetOrAddComponent<T>(item);
+        ele.Root = Root;
+        ele.context = Args;
+        ele.Show(true);
+        return ele;
+    }
+
+    // public List<T> Clone<T>(UI root, GameObject sample, int count) where T : UIElement
+    // {
+    //     if (sample == null | count <= 0)
+    //         return null;
+    //     List<T> list = new List<T>();
+    //     for (int i = 0; i < count; i++)
+    //     {
+    //         GameObject item = CreateChild(sample.transform.parent.gameObject, sample);
+    //         T ttt = NewElement<T>(root, item);// 实例化
+    //         ttt.gameObject.SetActive(true);
+    //         list.Add(ttt);
+    //     }
+    //     return list;
+    // }
+    
+    /// <summary>
+    /// 创建子对象
+    /// </summary>
+    /// <param name="parent"></param>
+    /// <param name="sample"></param>
+    /// <returns></returns>
+    public GameObject CreateChild(GameObject parent, GameObject sample)
+    {
+        GameObject item = GameObject.Instantiate<GameObject>(sample);
+        if (parent && item)
+        {
+            Transform t = item.transform;
+            t.SetParent(parent.transform);// 设置父节点
+            t.localPosition = Vector3.zero;
+            t.localRotation = Quaternion.identity;
+            t.localScale = Vector3.one;
+            item.layer = parent.layer;
+        }
+        return item;
     }
 }

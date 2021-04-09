@@ -5,7 +5,9 @@ namespace Tar
     /// </summary>
     public abstract class BaseData
     {
-        public int Id;
-        public string Name;
+        public int Tag = int.MinValue;
+        public int Id = int.MinValue;
+        public string Name = string.Empty;
+        protected virtual void Delete() { }
     }
 }

@@ -13,6 +13,7 @@ public class Staff : BaseData
     public int Gene;// 性别
     public Staff(JsonData json)
     {
+        this.Tag = Convert.ToInt32(Def.DataList.Staff);
         this.Id = Convert.ToInt32(json["id"].ToString());
         this.Name = json["name"].ToString();
         this.Power = Convert.ToInt32(json["power"].ToString());

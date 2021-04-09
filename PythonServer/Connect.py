@@ -74,13 +74,11 @@ def SendMessage(target, args):
 def ReceiveMessages(target, mes):
     index = mes.find('#')
     if index == -1:
+        Event.FireEvent(mes, tar=target)
         print('接收：{0}'.format(mes))
         return
     tag = mes[:index]
     args = mes[index + 1:].split(',')
-    if tag in Def.NetTag is None:
-        print('错误：网络协议【{0}】不存在'.format(tag))
-        return
     print('接收：{0}(tag={1},args={2})'.format(mes, tag, args))
     Event.FireEvent(tag, args[0], args[1], tar=target)
     # if tag == 'login:request':

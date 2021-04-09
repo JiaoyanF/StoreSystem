@@ -4,6 +4,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Def;
+using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 
@@ -20,7 +21,6 @@ public class MainFormUI : UI
     private Button About;
     private Text UserInfo;
     private Text NowTime;
-    Map<Button, List<Button>> Btns = new Map<Button, List<Button>>();
     protected override void Initialize()
     {
         // Top
@@ -35,55 +35,41 @@ public class MainFormUI : UI
 
         ShowBG(true);
         ChangeBG("MainBG");
-        GetBtns();
     }
     protected override void RegEvents()
     {
-        SubBtnClickEvent();
-    }
-    /// <summary>
-    /// 获取标题按钮组
-    /// </summary>
-    void GetBtns()
-    {
-        foreach (Button title_btn in GetComponentChild<Button>(Get(this, "Top")))
-        {
-            GameObject con = Get(title_btn.gameObject, "Context");
-            Btns.Add(title_btn, GetComponentChild<Button>(con));
-            // 设置点击展开菜单事件
-            SetBtnEvent(title_btn, delegate (){
-                SetActive(con, true);
-            });
-        }
-    }
-    void SubBtnClickEvent()
-    {
         // 销售子菜单
-        List<Button> sales_btns = Btns[Sales];
-        SetBtnEvent(sales_btns[0], Cashier);// 收银
-        SetBtnEvent(sales_btns[1], SalesRecord);// 销售记录
+        GameObject SalesCon = Get(Sales, "Context");
+        SetBtnEvent(Sales, delegate () { SetActive(SalesCon, true); });
+        Get(Sales, "sales_item").GetComponent<PointerEx>().SetEvent(Cashier, SalesCon);// 收银
+        Get(Sales, "salesrecord_item").GetComponent<PointerEx>().SetEvent(SalesRecord, SalesCon);// 销售记录
         // 商品管理子菜单
-        List<Button> goods_btns = Btns[GoodsMan];
-        SetBtnEvent(goods_btns[0], AddGoods);// 添加商品
-        SetBtnEvent(goods_btns[1], GoodsInfo);// 商品信息
+        GameObject GoodsCon = Get(GoodsMan, "Context");
+        SetBtnEvent(GoodsMan, delegate () { SetActive(GoodsCon, true); });
+        Get(GoodsMan, "goodadd_item").GetComponent<PointerEx>().SetEvent(AddGoods, GoodsCon);// 添加商品
+        Get(GoodsMan, "goodinfo_item").GetComponent<PointerEx>().SetEvent(GoodsInfo, GoodsCon);// 商品信息
         // 会员管理菜单
-        List<Button> vip_btns = Btns[VipMan];
-        SetBtnEvent(vip_btns[0], AddVip);// 加入会员
-        SetBtnEvent(vip_btns[1], VipInfo);// 会员信息
+        GameObject VipCon = Get(VipMan, "Context");
+        SetBtnEvent(VipMan, delegate () { SetActive(VipCon, true); });
+        Get(VipMan, "vipadd_item").GetComponent<PointerEx>().SetEvent(AddVip, VipCon);// 加入会员
+        Get(VipMan, "vipinfo_item").GetComponent<PointerEx>().SetEvent(VipInfo, VipCon);// 会员信息
         // 员工管理子菜单
-        List<Button> staff_btns = Btns[StaffMan];
-        SetBtnEvent(staff_btns[0], AddStaff);// 入职
-        SetBtnEvent(staff_btns[1], StaffInfo);// 员工信息
+        GameObject StaffCon = Get(StaffMan, "Context");
+        SetBtnEvent(StaffMan, delegate () { SetActive(StaffCon, true); });
+        Get(StaffMan, "staffadd_item").GetComponent<PointerEx>().SetEvent(AddStaff, StaffCon);// 入职
+        Get(StaffMan, "staffinfo_item").GetComponent<PointerEx>().SetEvent(StaffInfo, StaffCon);// 员工信息
         // 关于子菜单
-        List<Button> about_btns = Btns[About];
-        SetBtnEvent(about_btns[0], AboutShow);// 关于
-        SetBtnEvent(about_btns[1], LockingSystem);// 锁定
-        SetBtnEvent(about_btns[2], Logout);// 退出登录
-        SetBtnEvent(about_btns[3], ui_mgr.Loom.ExitSystem);// 退出系统
+        GameObject AboutCon = Get(About, "Context");
+        SetBtnEvent(About, delegate () { SetActive(AboutCon, true); });
+        Get(About, "about_item").GetComponent<PointerEx>().SetEvent(AboutShow, AboutCon);// 关于
+        Get(About, "lock_item").GetComponent<PointerEx>().SetEvent(LockingSystem, AboutCon);// 锁定
+        Get(About, "logout_item").GetComponent<PointerEx>().SetEvent(Logout, AboutCon);// 退出登录
+        Get(About, "exit_item").GetComponent<PointerEx>().SetEvent(ui_mgr.Loom.ExitSystem, AboutCon);// 退出系统
     }
     void Cashier()
     {
         Log.Debug("收银");
+        FireEvent(new Events.UI.OpenUI("SettleAccounts"));
     }
     void SalesRecord()
     {
@@ -92,10 +78,12 @@ public class MainFormUI : UI
     void AddGoods()
     {
         Log.Debug("添加商品");
+        FireEvent(new Events.UI.OpenUI("AddGoods"));
     }
     void GoodsInfo()
     {
         Log.Debug("商品信息");
+        FireEvent(new Events.UI.OpenUI("GoodsManage"));
     }
     void AddVip()
     {
@@ -125,21 +113,19 @@ public class MainFormUI : UI
     void Logout()
     {
         Log.Debug("退出登录");
+        SceneManager.LoadScene("Launcher");
     }
     protected override void OnEnable()
     {
+        // 设置用户信息
         if (UserInfo != null && ui_mgr.Loom.MainUser != null)
         {
-            UserInfo.text = Localization.Format("USER_TITLE", ui_mgr.Loom.MainUser.Name);
+            UserInfo.text = Localization.Format("USER_TITLE", ui_mgr.Loom.MainUser.Name, ui_mgr.Loom.MainUser.Power.ToString());
         }
     }
     protected override void OnUpdate()
     {
         RefreshNowTime();
-        if (Input.GetMouseButtonDown(0))
-        {
-            HideSubpanel();
-        }
     }
     /// <summary>
     /// 刷新当前时间
@@ -148,17 +134,7 @@ public class MainFormUI : UI
     {
         NowTime.text = Localization.Format("TIME_TITLE", DateTime.Now.ToString());
     }
-    /// <summary>
-    /// 隐藏展开菜单
-    /// </summary>
-    void HideSubpanel()
-    {
-        foreach (var item in Btns)
-        {
-            GameObject con = Get(item.Key.gameObject, "Context");
-            SetActive(con, false);
-        }
-    }
+
     protected override void OnDisable() { }
     protected override void OnDestroy() { }
 }

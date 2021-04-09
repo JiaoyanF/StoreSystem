@@ -196,6 +196,14 @@ public static class Events
                 this.Args = args;
             }
         }
+        public struct CloseUI : Event
+        {
+            public string UI;
+            public CloseUI(string ui)
+            {
+                this.UI = ui;
+            }
+        }
     }
 
     /// <summary>

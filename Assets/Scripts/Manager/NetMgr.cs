@@ -16,7 +16,7 @@ public class NetMgr : Obj
     Socket conn;// 连接
     Thread receiveThread;// 接收消息线程
     private static byte[] bytes = new byte[1024];// 消息字节组
-    private Map<Type, NetEventHandler> Events = new Map<Type, NetEventHandler>();
+    private Map<string, NetEventHandler> Events = new Map<string, NetEventHandler>();
 
     public delegate void NetEventRecv(JsonData context);// 网络事件回调
     bool is_connect;// 线程指示灯
@@ -63,7 +63,7 @@ public class NetMgr : Obj
 
     public void SendMessage(string tag, params string[] args)
     {
-        string str = tag + "#" + string.Join(",", args);
+        string str = args.Length > 0 ? tag + "#" + string.Join(",", args) : tag;
         Log.Format("发送：{0}", str);
         conn.Send(Encoding.UTF8.GetBytes(str));
     }
@@ -91,10 +91,10 @@ public class NetMgr : Obj
     }
     public void FireEvent(string tag, string context)
     {
-        Type type = tag.GetType();
-        if (Events.ContainsKey(type))
+        // Type type = tag.GetType();
+        if (Events.ContainsKey(tag))
         {
-            Events[type].Call(context);
+            Events[tag].Call(context);
         }else
         {
             Log.Format("协议【{0}】未定义事件", tag);
@@ -105,7 +105,7 @@ public class NetMgr : Obj
     {
         Type type = tag.GetType();
         NetEventHandler net_event = new NetEventHandler(type, action);
-        Events.Add(type, net_event);
+        Events.Add(tag, net_event);
     }
 
     /// <summary>
@@ -157,12 +157,18 @@ public struct NetTag
 {
     public struct Login
     {
-        public const string Req_Login = "login:request";// 登录请求
-        public const string Resp_Login = "login:response";// 登录响应
+        public const string LoginVerify = "login:verify";// 请求、响应：登录
     }
     public struct Data
     {
-        public const string Req_UserData = "user:get_data";// 请求：用户数据
-        public const string Resp_UserData = "user:data";// 响应：用户数据
+        public const string DeleteData = "data:delete";// 删除数据
+    }
+    public struct User
+    {
+        public const string GetData = "user:data";// 请求、响应：用户数据
+    }
+    public struct Goods
+    {
+        public const string GetData = "goods:data";// 请求、响应：商品数据
     }
 }

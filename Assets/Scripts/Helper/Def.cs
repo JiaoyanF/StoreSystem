@@ -46,6 +46,20 @@ namespace Def
 
     #endregion
 
+    #region 数据库
+
+    public enum DataList
+    {
+        Goods,
+        Staff,
+        Vip,
+        SalesRecord,
+        StaffModRecord,
+        VipModRecord,
+    }
+
+    #endregion
+
     #region 功能枚举类型
 
     /// <summary>

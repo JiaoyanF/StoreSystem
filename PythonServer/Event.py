@@ -5,6 +5,7 @@
 import DBControl
 import Connect
 import Running
+import Def
 Events = {}
 
 
@@ -17,7 +18,8 @@ def InitEvent():
     RegEvent("DeleteData", DBControl.DeleteData)
     RegEvent("SendMessage", Connect.SendMessage)
     # 网络事件
-    RegEvent("login:request", Running.Verify)
+    RegEvent("login:verify", Running.Verify)
+    RegEvent("goods:data", Running.GetGoodsData)
 
 
 # 触发事件

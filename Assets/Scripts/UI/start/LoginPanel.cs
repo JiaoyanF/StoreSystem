@@ -17,16 +17,16 @@ public class LoginPanel : UIElement
 
     protected override void Initialize()
     {
-        un_input = GetControl<InputField>(Get(this, "un_input"));
-        ps_input = GetControl<InputField>(Get(this, "ps_input"));
+        un_input = Root.GetControl<InputField>(Root.Get(this, "un_input"));
+        ps_input = Root.GetControl<InputField>(Root.Get(this, "ps_input"));
     }
     protected override void RegEvents()
     {
         // base.RegEvents();
-        SetBtnEvent(Get(this, "mask"), MaskClick);
-        SetBtnEvent(Get(this, "login"), LoadData);
-        SetBtnEvent(Get(this, "reset"), ResetData);
-        Root.NetMgr.RegEvent(NetTag.Login.Resp_Login, LoginResult);
+        Root.SetBtnEvent(Root.Get(this, "mask"), MaskClick);
+        Root.SetBtnEvent(Root.Get(this, "login"), LoadData);
+        Root.SetBtnEvent(Root.Get(this, "reset"), ResetData);
+        Root.NetMgr.RegEvent(NetTag.Login.LoginVerify, LoginResult);
     }
     protected override void OnEnable()
     {
@@ -56,7 +56,7 @@ public class LoginPanel : UIElement
             Log.Debug("数据不完整");
             return;
         }
-        Root.NetMgr.SendMessage(NetTag.Login.Req_Login, un_input.text, ps_input.text);
+        Root.NetMgr.SendMessage(NetTag.Login.LoginVerify, un_input.text, ps_input.text);
     }
     /// <summary>
     /// 登录结果
@@ -71,7 +71,7 @@ public class LoginPanel : UIElement
                 Staff user = new Staff(con["user"]);
                 Root.ui_mgr.Loom.LoginUser(user);
             }
-            FireEvent(new Events.UI.OpenUI("MainForm"));
+            Root.FireEvent(new Events.UI.OpenUI("MainForm"));
         }else
         {
             Log.Format("登录失败：{0}", con["reason"].ToString());
@@ -82,8 +82,8 @@ public class LoginPanel : UIElement
     /// </summary> 
     private void ResetData()
     {
-        un_input.text = "";
-        ps_input.text = "";
+        un_input.text = "1998";
+        ps_input.text = "522";
     }
     private void MaskClick()
     {

@@ -70,11 +70,21 @@ public class UIMgr : Obj
     protected override void RegEvents()
     {
         RegEventHandler<Events.UI.OpenUI>(OnCreateUIEvent);
+        RegEventHandler<Events.UI.CloseUI>(OnCloseUIEvent);
     }
 
     private void OnCreateUIEvent(Obj sender, Events.UI.OpenUI e)
     {
         LoadUI(e.UI, e.Args);
+    }
+    private void OnCloseUIEvent(Obj sender, Events.UI.CloseUI e)
+    {
+        Log.Format("关闭ui：{0}", e.UI);
+        if (uis.ContainsKey(e.UI))
+        {
+            uis[e.UI].Close();
+            return;
+        }
     }
 
     #region 私有方法
@@ -88,7 +98,7 @@ public class UIMgr : Obj
     {
         if (uis.ContainsKey(UIName))
         {
-            uis[UIName].Show();
+            uis[UIName].Show(Args);
             return;
         }
 

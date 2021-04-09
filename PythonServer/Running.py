@@ -3,6 +3,7 @@
 运行
 """
 import Event
+import Def
 
 
 # class Running:
@@ -24,4 +25,14 @@ def Verify(target, args):
         result['user'] = cursor[0]
     else:
         result['reason'] = "password error"
-    Event.FireEvent("SendMessage", "login:response", result, tar=target)
+    Event.FireEvent("SendMessage", "login:verify", result, tar=target)
+
+
+# 获取商品数据
+def GetGoodsData(target, args):
+    if len(args) == 2:
+        cursor = Event.FireEvent("FindData", "Goods", args)
+    else:
+        cursor = Event.FireEvent("FindData", "Goods")
+    result = {'data': cursor}
+    Event.FireEvent("SendMessage", "goods:data", result, tar=target)
