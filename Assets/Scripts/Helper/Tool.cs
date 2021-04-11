@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using Newtonsoft.Json;
 using Def;
+using LitJson;
 using System.Reflection;
 
 /// <summary>
@@ -92,6 +93,47 @@ public class Tool
     {
         return gameObject.scene.name != null;
     }
+    /// <summary>
+    /// 判断json数据是否有该字段
+    /// </summary>
+    public static bool ContainsKey(JsonData json, string key_name)
+    {
+        bool res = false;
+        if (((IDictionary)json).Contains(key_name))
+        {
+            //string valuestr = (string)Json[KeyName];
+            res = true;
+        }
+        return res;
+    }
+    /// <summary>
+    /// 判断json有多少条数据
+    /// </summary>
+    public static int GetJsonCount(JsonData json)
+    {
+        return ((IDictionary)json).Count;
+    }
+    /// <summary>
+    /// 获取字段
+    /// </summary>
+    public static List<FieldInfo> GetField<T>(T model)
+    {
+        List<FieldInfo> members = new List<FieldInfo>();
+        var model_type = model.GetType();
+        // Log.Debug("获取字段");
+        foreach (FieldInfo item in model_type.GetFields())
+        {
+            members.Add(item);
+            // Log.Debug("字段名称：{0}，类型：{1}，值：{2}", item.Name, item.Module, item.GetValue(model));
+        }
+        // Log.Debug("获取属性");
+        // foreach (PropertyInfo item in model_type.GetProperties())
+        // {
+        //     members.Add(item);
+        //     Log.Debug("属性名称：{0}，类型：{1}，值：{2}", item.Name, item.Module, item.GetValue(model));
+        // }
+        return members;
+    }
 }
 
 /// <summary>
@@ -171,30 +213,8 @@ public class Log
 {
     public static void Debug(string con, params object[] args)
     {
-        if (args == null) { return; }
-        if (args.Length == 0)
-        {
-            UnityEngine.Debug.Log(con);
-        }
-        else
-        {
-            ArrayList list = new ArrayList();
-            foreach (var item in args)
-            {
-                list.Add(item);
-            }
-            string[] str = (string[])list.ToArray(typeof(string));
-            UnityEngine.Debug.Log(con + " = " + String.Join(",", str));
-        }
-    }
-    public static void Format(string con, params object[] args)
-    {
-        string str = "";
-        foreach (var item in args)
-        {
-            str = String.Format(con, item.ToString());
-        }
-        Log.Debug(str);
+        string str = args.Length == 0 ? con : String.Format(con, args);
+        UnityEngine.Debug.Log(str);
     }
 }
 // 本地信息

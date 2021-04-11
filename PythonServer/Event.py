@@ -20,13 +20,19 @@ def InitEvent():
     # 网络事件
     RegEvent("login:verify", Running.Verify)
     RegEvent("goods:data", Running.GetGoodsData)
+    RegEvent("goods:add", Running.AddGoods)
+    RegEvent("goods:delete", Running.DeleteGoods)
+    RegEvent("goods:update", Running.UpdateGoods)
+
 
 
 # 触发事件
 def FireEvent(tag, *args, **kwargs):
     if Events.get(tag) is None:
         return
-    # print("参数args：{0}参数kwargs：{1}".format(args, kwargs))
+    if len(args) == 1:
+        args = args[0]
+    print('事件参数：{0}'.format(args))
     if len(kwargs) == 0:
         return Events[tag](args)
     else:

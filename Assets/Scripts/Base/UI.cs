@@ -9,7 +9,7 @@ using Def;
 /// <summary>
 /// ui基类
 /// </summary> 
-public abstract class UI : MonoBehaviour
+public abstract class UI : MonoBehaviour, IDisposable
 {
     private Canvas Canvas;
     private int PlaneDistance = 2;// 距摄像机平面距离
@@ -56,8 +56,11 @@ public abstract class UI : MonoBehaviour
             case UILayer.Full:
                 this.Canvas.sortingOrder = 2;
                 break;
-            case UILayer.Tips:
+            case UILayer.Popup:
                 this.Canvas.sortingOrder = 3;
+                break;
+            case UILayer.Tips:
+                this.Canvas.sortingOrder = 4;
                 break;
             default:
                 this.Canvas.sortingOrder = 0;
@@ -104,12 +107,17 @@ public abstract class UI : MonoBehaviour
     /// 销毁面板
     /// </summary>
     protected virtual void OnDestroy() { }
+    public void Dispose()
+    {
+        Destroy(this.gameObject);
+    }
 
     public void Show(object[] Args = null)
     {
         if (Args != null)
             this.context = Args;
         ui_mgr.ShowUI(this);
+        SetActive(this, false);
         SetActive(this, true);
     }
     public void Close()
@@ -117,6 +125,10 @@ public abstract class UI : MonoBehaviour
         ui_mgr.CloseUI(this);
         SetActive(this, false);
         Destroy(Asset);
+    }
+    public void Close(string ui_name)
+    {
+        ui_mgr.CloseUI(ui_name);
     }
     public void SetActive<T>(T obj, bool active) where T : Component
     {
@@ -210,7 +222,7 @@ public abstract class UI : MonoBehaviour
     /// </summary> 
     /// <param name="own">父</param>
     /// <param name="target">目标名</param>
-    public T GetControl<T, U>(U own, string target) where U : UI, new() where T : Component
+    public T GetControl<T>(Component own, string target) where T : Component
     {
         return Tool.FindChild(own.transform, target).gameObject.GetComponent<T>();
     }
@@ -253,7 +265,7 @@ public abstract class UI : MonoBehaviour
 /// <summary>
 /// ui元素基类
 /// </summary>
-public abstract class UIElement : MonoBehaviour
+public abstract class UIElement : MonoBehaviour, IDisposable
 {
     public UI Root;// 根节点
     public int HashID { get; private set; }
@@ -275,6 +287,10 @@ public abstract class UIElement : MonoBehaviour
     protected virtual void OnUpdate() { }
     protected virtual void OnDisable() { }
     protected virtual void OnDestroy() { }
+    public void Dispose()
+    {
+        Destroy(this.gameObject);
+    }
     internal void DoInitIfDont()
     {
         if (!initialized)
@@ -313,21 +329,21 @@ public abstract class UIElement : MonoBehaviour
         ele.Show(true);
         return ele;
     }
-
-    // public List<T> Clone<T>(UI root, GameObject sample, int count) where T : UIElement
-    // {
-    //     if (sample == null | count <= 0)
-    //         return null;
-    //     List<T> list = new List<T>();
-    //     for (int i = 0; i < count; i++)
-    //     {
-    //         GameObject item = CreateChild(sample.transform.parent.gameObject, sample);
-    //         T ttt = NewElement<T>(root, item);// 实例化
-    //         ttt.gameObject.SetActive(true);
-    //         list.Add(ttt);
-    //     }
-    //     return list;
-    // }
+    public List<T> Clone<T>(List<T> list, int count) where T : UIElement
+    {
+        if (count <= 0)
+            return null;
+        foreach (var item in list)
+        {
+            item.Dispose();
+        }
+        list = new List<T>();
+        for (int i = 0; i < count; i++)
+        {
+            list.Add(this.Clone<T>());
+        }
+        return list;
+    }
     
     /// <summary>
     /// 创建子对象

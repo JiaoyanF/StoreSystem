@@ -53,19 +53,28 @@ public class NetMgr : Obj
         }
         catch (SocketException e)
         {
-            Log.Format("连接错误:{0}", e.ToString());
+            Log.Debug("连接错误:{0}", e.ToString());
         }
         catch (Exception e)
         {
-            Log.Format("错误:{0}", e.ToString());
+            Log.Debug("错误:{0}", e.ToString());
         }
     }
 
-    public void SendMessage(string tag, params string[] args)
+    public void SendMessage(string tag, string args)
     {
-        string str = args.Length > 0 ? tag + "#" + string.Join(",", args) : tag;
-        Log.Format("发送：{0}", str);
-        conn.Send(Encoding.UTF8.GetBytes(str));
+        string str = tag + "#" + args;
+        SendMessage(str);
+    }
+    public void SendMessage(string tag, object obj)
+    {
+        string str = tag + "#" + JsonMapper.ToJson(obj);
+        SendMessage(str);
+    }
+    public void SendMessage(string mess)
+    {
+        Log.Debug("发送：{0}", mess);
+        conn.Send(Encoding.UTF8.GetBytes(mess));
     }
 
     /// <summary>
@@ -82,7 +91,7 @@ public class NetMgr : Obj
                 CloseNet();
                 return;
             }
-            Log.Format("接收：{0}", strContent);
+            Log.Debug("接收：{0}", strContent);
             if (strContent.Contains("#"))
             {
                 system_mgr.Loom.AddNetWork(strContent);
@@ -97,12 +106,14 @@ public class NetMgr : Obj
             Events[tag].Call(context);
         }else
         {
-            Log.Format("协议【{0}】未定义事件", tag);
+            Log.Debug("协议【{0}】未定义事件", tag);
         }
     }
 
     public void RegEvent(string tag, NetEventRecv action)
     {
+        if (Events.ContainsKey(tag))
+            Events.Remove(tag);
         Type type = tag.GetType();
         NetEventHandler net_event = new NetEventHandler(type, action);
         Events.Add(tag, net_event);
@@ -170,5 +181,8 @@ public struct NetTag
     public struct Goods
     {
         public const string GetData = "goods:data";// 请求、响应：商品数据
+        public const string AddGoods = "goods:add";// 添加商品
+        public const string DeleteGoods = "goods:delete";// 删除商品
+        public const string UpdateGoods = "goods:update";// 修改商品信息
     }
 }

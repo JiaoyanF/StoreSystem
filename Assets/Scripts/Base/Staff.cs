@@ -11,6 +11,7 @@ public class Staff : BaseData
     public int Power;// 权限
     public int Post;// 岗位
     public int Gene;// 性别
+    public Staff() { }
     public Staff(JsonData json)
     {
         this.Tag = Convert.ToInt32(Def.DataList.Staff);

@@ -47,7 +47,7 @@ public class MainFormUI : UI
         GameObject GoodsCon = Get(GoodsMan, "Context");
         SetBtnEvent(GoodsMan, delegate () { SetActive(GoodsCon, true); });
         Get(GoodsMan, "goodadd_item").GetComponent<PointerEx>().SetEvent(AddGoods, GoodsCon);// 添加商品
-        Get(GoodsMan, "goodinfo_item").GetComponent<PointerEx>().SetEvent(GoodsInfo, GoodsCon);// 商品信息
+        Get(GoodsMan, "goodinfo_item").GetComponent<PointerEx>().SetEvent(GoodsManage, GoodsCon);// 商品信息
         // 会员管理菜单
         GameObject VipCon = Get(VipMan, "Context");
         SetBtnEvent(VipMan, delegate () { SetActive(VipCon, true); });
@@ -78,9 +78,9 @@ public class MainFormUI : UI
     void AddGoods()
     {
         Log.Debug("添加商品");
-        FireEvent(new Events.UI.OpenUI("AddGoods"));
+        FireEvent(new Events.UI.OpenUI("GoodsInfo"));
     }
-    void GoodsInfo()
+    void GoodsManage()
     {
         Log.Debug("商品信息");
         FireEvent(new Events.UI.OpenUI("GoodsManage"));

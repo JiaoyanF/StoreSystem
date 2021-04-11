@@ -30,6 +30,10 @@ namespace Def
         /// <summary>
         /// 弹出窗体
         /// </summary> 
+        Popup,
+        /// <summary>
+        /// 提示
+        /// </summary> 
         Tips,
     }
 
@@ -74,12 +78,44 @@ namespace Def
     /// <summary>
     /// 商品类型
     /// </summary> 
-    public enum GoodsType
+    public class GoodsType
     {
-        Snacks,// 零食
-        Drinks,// 酒水
-        Commodity,// 日用品
-        Other,// 其他
+        public const string Other = "其他";
+        public const string Snacks = "零食";
+        public const string Drinks = "酒水";
+        public const string Commodity = "日用品";
+        public static string Convert(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return Other;
+                case 1:
+                    return Snacks;
+                case 2:
+                    return Drinks;
+                case 3:
+                    return Commodity;
+                default:
+                    return string.Empty;
+            }
+        }
+        public static int Convert(string name)
+        {
+            switch (name)
+            {
+                case Other:
+                    return 0;
+                case Snacks:
+                    return 1;
+                case Drinks:
+                    return 2;
+                case Commodity:
+                    return 3;
+                default:
+                    return -1;
+            }
+        }
     }
 
     /// <summary>

@@ -78,9 +78,11 @@ def ReceiveMessages(target, mes):
         print('接收：{0}'.format(mes))
         return
     tag = mes[:index]
-    args = mes[index + 1:].split(',')
-    print('接收：{0}(tag={1},args={2})'.format(mes, tag, args))
-    Event.FireEvent(tag, args[0], args[1], tar=target)
+    # args = mes[index + 1:]
+    args = json.loads(mes[index + 1:])
+    # args = mes[index + 1:].split(',')
+    print('接收：tag={1},args={2}'.format(mes, tag, args))
+    Event.FireEvent(tag, args, tar=target)
     # if tag == 'login:request':
     #     DBControl.AddData('Goods', 100004, '牛奶', 500, 1)
 
@@ -88,6 +90,7 @@ def ReceiveMessages(target, mes):
 # 断开连接
 def CloseNet(conn):
     conn.close()
+    DBControl.CloseDB()
 
 
 if __name__ == '__main__':

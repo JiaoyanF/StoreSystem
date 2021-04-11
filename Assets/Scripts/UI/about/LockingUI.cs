@@ -17,8 +17,8 @@ public class LockingUI : UI
     InputField ps_input;
     protected override void Initialize()
     {
-        un_input = GetControl<InputField>(Get(this, "un_input"));
-        ps_input = GetControl<InputField>(Get(this, "ps_input"));
+        un_input = GetControl<InputField>(this, "un_input");
+        ps_input = GetControl<InputField>(this, "ps_input");
     }
     protected override void RegEvents()
     {

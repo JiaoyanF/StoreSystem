@@ -37,6 +37,7 @@ public class Loom : MonoBehaviour
     {
         if (net_buffer.Count <= 0) return;
         string[] strs = Regex.Split(net_buffer[0], "#");
+        
         system_mgr.GetSingleT<NetMgr>().FireEvent(strs[0], strs[1]);
         net_buffer.RemoveAt(0);
     }

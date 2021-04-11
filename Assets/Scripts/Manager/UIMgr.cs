@@ -66,6 +66,23 @@ public class UIMgr : Obj
             uis.Remove(ui.Name);
         }
     }
+    public void CloseUI(string ui_name)
+    {
+        if (uis.ContainsKey(ui_name))
+        {
+            uis[ui_name].Close();
+            uis.Remove(ui_name);
+        }
+    }
+
+    public T GetUI<T>(string ui_name)where T : UI
+    {
+        if (uis.ContainsKey(ui_name))
+        {
+            return uis[ui_name] as T;
+        }
+        return null;
+    }
 
     protected override void RegEvents()
     {
@@ -79,7 +96,7 @@ public class UIMgr : Obj
     }
     private void OnCloseUIEvent(Obj sender, Events.UI.CloseUI e)
     {
-        Log.Format("关闭ui：{0}", e.UI);
+        Log.Debug("关闭ui：{0}", e.UI);
         if (uis.ContainsKey(e.UI))
         {
             uis[e.UI].Close();

@@ -17,8 +17,8 @@ public class LoginPanel : UIElement
 
     protected override void Initialize()
     {
-        un_input = Root.GetControl<InputField>(Root.Get(this, "un_input"));
-        ps_input = Root.GetControl<InputField>(Root.Get(this, "ps_input"));
+        un_input = Root.GetControl<InputField>(this, "un_input");
+        ps_input = Root.GetControl<InputField>(this, "ps_input");
     }
     protected override void RegEvents()
     {
@@ -56,7 +56,10 @@ public class LoginPanel : UIElement
             Log.Debug("数据不完整");
             return;
         }
-        Root.NetMgr.SendMessage(NetTag.Login.LoginVerify, un_input.text, ps_input.text);
+        JsonData data = new JsonData();
+        data["username"] = un_input.text;
+        data["password"] = ps_input.text;
+        Root.NetMgr.SendMessage(NetTag.Login.LoginVerify, data);
     }
     /// <summary>
     /// 登录结果
@@ -64,9 +67,9 @@ public class LoginPanel : UIElement
     /// <param name="con"></param>
     private void LoginResult(JsonData con)
     {
-        if (Convert.ToBoolean(con["result"].ToString()))
+        if (Tool.ContainsKey(con, "result") && Boolean.Parse(con["result"].ToString()))
         {
-            if (Boolean.Parse(con["result"].ToString()))// 为啥没有con.ContainsKey("user")
+            if (Tool.ContainsKey(con, "user"))
             {
                 Staff user = new Staff(con["user"]);
                 Root.ui_mgr.Loom.LoginUser(user);
@@ -74,7 +77,7 @@ public class LoginPanel : UIElement
             Root.FireEvent(new Events.UI.OpenUI("MainForm"));
         }else
         {
-            Log.Format("登录失败：{0}", con["reason"].ToString());
+            Log.Debug("登录失败：{0}", con["reason"].ToString());
         }
     }
     /// <summary>

@@ -3,14 +3,53 @@
 数据库处理
 """
 import pymysql
+
 pymysql.install_as_MySQLdb()
 
-global db, cursor
+global db
+
+
+def InitDB():
+    global db
+    # noinspection PyBroadException
+    try:
+        db.ping()
+        return db.cursor()
+    except Exception as e:
+        return ConnectDB().cursor()
+
+
+# 关闭数据库
+def CloseDB():
+    global db
+    try:
+        db.ping()
+        db.cursor().close()
+        db.close()  # 关闭数据库
+    except Exception as e:
+        print(e)
+
+
+def CommitDB():
+    global db
+    try:
+        db.commit()
+    except Exception as e:
+        print(e)
+
+
+# 发生错误回滚
+def RollbackDB():
+    global db
+    try:
+        db.rollback()
+    except Exception as e:
+        print(e)
 
 
 # 连接数据库
 def ConnectDB():
-    global cursor, db
+    global db
     db = pymysql.connect(
         host='119.29.65.81',
         # host='127.0.0.1',
@@ -21,24 +60,22 @@ def ConnectDB():
         charset='utf8',  # 数据库字符集
         cursorclass=pymysql.cursors.DictCursor,  # 字典显示
     )
-    # 获取游标对象
-    cursor = db.cursor()
+    return db
 
 
 # 执行sql语句
 def Execute(target, source):
-    CheckDB()
-    global cursor, db
-    cursor.execute("select {0} form {1}".format(target, source))
+    cur = InitDB()
+    cur.execute("select {0} form {1}".format(target, source))
+    CommitDB()
 
 
 # 添加数据
 def AddData(args):
-    CheckDB()
-    global cursor, db
-    cursor.execute("select * from %s" % args[0])
-    fields = cursor.description
-    print(fields)
+    print("添加数据:".format(args))
+    cur = FindData(args[0])
+    fields = cur.description
+    # print(fields)
     head = []
     for field in fields:
         head.append(field[0])
@@ -54,56 +91,53 @@ def AddData(args):
     # noinspection PyBroadException
     try:
         # 插入数据
-        cursor.execute(sql_str)
-        # 提交到数据库
-        db.commit()
+        cur.execute(sql_str)
+        CommitDB()
+        return True, None
     except Exception as e:
         print(e)
-        # 发生错误回滚
-        db.rollback()
+        RollbackDB()
+        return False, str(e)
 
 
 # 修改数据
 def UpData(args):
-    CheckDB()
-    global cursor, db
-    print("修改数据:".format(args))
-    num = cursor.execute("update %s where %s = %s" % (args[0], args[1], args[2]))
-    print("修改后受影响的行数为：", num)
+    cursor = InitDB()
+    print("修改数据:{0}".format(args))
+    try:
+        num = cursor.execute("update %s set  %s = %s where  id = %s" % (args[0], args[1], args[2], args[3]))
+        print("修改后受影响的行数为：", num)
+        CommitDB()
+        return True, None
+    except Exception as e:
+        print(e)
+        RollbackDB()
+        return False, str(e)
 
 
 # 删除数据
 def DeleteData(args):
-    CheckDB()
-    global cursor, db
-    lis = FindData(args)
-    print("删除数据:{0}".format(lis))
-    cursor.execute("delete from %s where %s = %s" % (args[0], args[1], args[2]))
+    cursor = InitDB()
+    print("删除数据:{0}".format(args))
+    try:
+        num = cursor.execute("delete from %s where %s = %s" % (args[0], args[1], args[2]))
+        CommitDB()
+        return num > 0, None
+    except Exception as e:
+        print(e)
+        RollbackDB()
+        return False, str(e)
 
 
 # 查找数据
 def FindData(args):
-    CheckDB()
     print("查询参数：{0}".format(args))
-    global cursor, db
-    if len(args) > 1:
-        cursor.execute("select * from %s where %s = %s" % (args[0], args[1], args[2]))
+    cursor = InitDB()
+    if type(args) is str:
+        cursor.execute("select * from %s" % args)
     else:
-        cursor.execute("select * from %s" % args[0])
-    return cursor.fetchall()
-
-
-def CheckDB():
-    global cursor, db
-    if cursor is None:
-        ConnectDB()
-
-
-# 关闭数据库
-def CloseDB():
-    global cursor, db
-    # 关闭数据库
-    db.close()
+        cursor.execute("select * from %s where %s = %s" % (args[0], args[1], args[2]))
+    return cursor
 
 # cursor.executemany(sql, list1, list2)   一次操作多条数据
 # row1 = cursor.fetchone()# 返回游标当前一条记录，游标后移到下一条
