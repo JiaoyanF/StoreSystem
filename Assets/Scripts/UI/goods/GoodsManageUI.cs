@@ -33,7 +33,7 @@ public class GoodsManageUI : UI
         DelBtn = Get(this, "Delete");
         Title = Get(this, "Title");
         List = Get(this, "List");
-        Item = NewElement<GoodsItem>(this, Get(List, "Item"));
+        Item = NewElement<GoodsItem>(this, Get(List, "GoodsItem"));
     }
     protected override void RegEvents()
     {
@@ -44,8 +44,12 @@ public class GoodsManageUI : UI
         SetBtnEvent(AddBtn, ClickAddBtn);
         SetBtnEvent(ModBtn, ClickModBtn);
         SetBtnEvent(DelBtn, ClickDelBtn);
-        NetMgr.RegEvent(NetTag.Goods.GetData, RefreshGoodsList);
-        NetMgr.RegEvent(NetTag.Goods.DeleteGoods, RefreshGoodsList);
+        RegEventHandler<Events.GoodsEve.Get>(RefreshData);
+        RegEventHandler<Events.GoodsEve.Add>(AddData);
+        RegEventHandler<Events.GoodsEve.Update>(UpdateData);
+        RegEventHandler<Events.GoodsEve.Delete>(DeleteData);
+        // NetMgr.RegEvent(NetTag.Goods.GetData, RefreshGoodsList);
+        // NetMgr.RegEvent(NetTag.Goods.DeleteGoods, RefreshGoodsList);
     }
     public void ClickAddBtn()
     {
@@ -109,6 +113,91 @@ public class GoodsManageUI : UI
             }
         }
     }
+    /// <summary>
+    /// 刷新商品列表
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    void RefreshData(Obj sender, Events.GoodsEve.Get e)
+    {
+        if (!e.Result)
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
+            return;
+        }
+        CloneGoodsItem(e.Data);
+        Screen.value = 0;
+        Search.text = string.Empty;
+    }
+    /// <summary>
+    /// 添加商品
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    void AddData(Obj sender, Events.GoodsEve.Add e)
+    {
+        if (!e.Result)
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
+            return;
+        }
+        GoodsItem new_item = Item.Clone<GoodsItem>();
+        new_item.RefreshData(e.NewGoods);
+        new_item.SetNumShow(true);
+        new_item.SetTotalShow(true);
+        new_item.ClickFunc = ClickFunc;
+        for (int i = 0; i < GoodsList.Count; i++)
+        {
+            if (i + 1 < GoodsList.Count && GoodsList[i + 1].data.Id > e.NewGoods.Id)
+            {
+                GoodsList.Insert(i, new_item);
+                break;
+            }
+        }
+    }
+    /// <summary>
+    /// 修改商品信息
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    void UpdateData(Obj sender, Events.GoodsEve.Update e)
+    {
+        if (!e.Result)
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
+            return;
+        }
+        foreach (var item in GoodsList)
+        {
+            if (item.data.Id == e.NewGoods.Id)
+            {
+                item.RefreshData(e.NewGoods);
+                break;
+            }
+        }
+    }
+    /// <summary>
+    /// 删除商品
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    void DeleteData(Obj sender, Events.GoodsEve.Delete e)
+    {
+        if (!e.Result)
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
+            return;
+        }
+        for (int i = 0; i < GoodsList.Count; i++)
+        {
+            if (GoodsList[i].data.Id == e.Id)
+            {
+                GoodsList[i].Dispose();
+                GoodsList.RemoveAt(i);
+                break;
+            }
+        }
+    }
     // 刷新商品列表
     void RefreshGoodsList(JsonData con)
     {
@@ -133,7 +222,10 @@ public class GoodsManageUI : UI
         foreach (JsonData item in data)
         {
             GoodsList[index].RefreshData(new Goods(item));
+            GoodsList[index].SetNumShow(true);
+            GoodsList[index].SetTotalShow(true);
             GoodsList[index].ClickFunc = ClickFunc;
+            Log.Debug("{0}顺序:{1}",GoodsList[index].name,GoodsList[index].transform.GetSiblingIndex());
             index++;
         }
         // foreach (JsonData item in data)
@@ -149,84 +241,25 @@ public class GoodsManageUI : UI
     /// 商品项点击事件
     /// </summary>
     /// <param name="item"></param>
-    public void ClickFunc(GoodsItem item)
+    private void ClickFunc(GoodsItem item)
     {
         if (CurrItem != null)
         {
-            if (CurrItem.data.Id == item.data.Id) return;// 重复点击
             CurrItem.SelectState(false);
+            // 重复点击
+            if (CurrItem.data.Id == item.data.Id)
+            {
+                CurrItem = null;
+                return;
+            }
         }
         item.SelectState(true);
         CurrItem = item;
         // Log.Format("当前项：{0}", CurrItem.data.Name);
-        // Tool.GetMembers(item.data);
     }
     protected override void OnEnable()
     {
         NetMgr.SendMessage(NetTag.Goods.GetData);
-    }
-    protected override void OnUpdate()
-    {
-    }
-    protected override void OnDisable()
-    {
-    }
-    protected override void OnDestroy()
-    {
-    }
-}
-/// <summary>
-/// 商品项
-/// </summary>
-public class GoodsItem : UIElement
-{
-    GameObject select;// 选中高亮
-    Text index;
-    Text goods_name;
-    Text type;
-    Text price;
-    Text stock;
-    Text desc;
-    public Goods data;// 数据
-    public delegate void OnItemClick(GoodsItem item);
-    public OnItemClick ClickFunc;
-    protected override void Initialize()
-    {
-        select = Root.Get(this, "select");
-        index = Root.GetControl<Text>(this, "idx");
-        goods_name = Root.GetControl<Text>(this, "name");
-        type = Root.GetControl<Text>(this, "type");
-        price = Root.GetControl<Text>(this, "price");
-        stock = Root.GetControl<Text>(this, "stock");
-        desc = Root.GetControl<Text>(this, "desc");
-    }
-    protected override void RegEvents()
-    {
-        Root.SetBtnEvent(this.gameObject, OnClick);
-        // Root.NetMgr.RegEvent(NetTag.Login.LoginVerify, LoginResult);
-    }
-    public void RefreshData(Goods data)
-    {
-        this.data = data;
-        this.gameObject.name = data.Id.ToString();
-        Root.SetText(index, data.Id);
-        Root.SetText(goods_name, data.Name);
-        Root.SetText(type, data.GetTypeName());
-        Root.SetText(price, data.Price);
-        Root.SetText(stock, data.Stock);
-        Root.SetText(desc, data.Tips);
-    }
-    public void SelectState(bool is_select)
-    {
-        select.SetActive(is_select);
-    }
-    public void OnClick()
-    {
-        if (ClickFunc != null)
-            ClickFunc(this);
-    }
-    protected override void OnEnable()
-    {
     }
     protected override void OnUpdate()
     {

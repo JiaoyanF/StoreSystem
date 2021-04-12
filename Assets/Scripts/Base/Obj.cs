@@ -60,23 +60,5 @@ public class Obj : IDisposable
         return h;
     }
 
-    protected EventMgr.Handler RegEventHandler(EventMgr.OnEventRecv recv, Type t)
-    {
-        if (this.system_mgr == null)
-        {
-            return null;
-        }
-
-        if (recv == null)
-            return null;
-
-        if (this.event_handlers.ContainsKey(t))
-            return event_handlers[t];
-        EventMgr.Handler h = this.system_mgr.RegEventHandler(recv, t);
-        if (h != null)
-            this.event_handlers.Add(t, h);
-        return h;
-    }
-
     #endregion
 }

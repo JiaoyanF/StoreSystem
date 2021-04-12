@@ -66,29 +66,13 @@ public class UIMgr : Obj
             uis.Remove(ui.Name);
         }
     }
-    public void CloseUI(string ui_name)
-    {
-        if (uis.ContainsKey(ui_name))
-        {
-            uis[ui_name].Close();
-            uis.Remove(ui_name);
-        }
-    }
-
-    public T GetUI<T>(string ui_name)where T : UI
-    {
-        if (uis.ContainsKey(ui_name))
-        {
-            return uis[ui_name] as T;
-        }
-        return null;
-    }
-
     protected override void RegEvents()
     {
         RegEventHandler<Events.UI.OpenUI>(OnCreateUIEvent);
         RegEventHandler<Events.UI.CloseUI>(OnCloseUIEvent);
     }
+
+    #region 私有方法
 
     private void OnCreateUIEvent(Obj sender, Events.UI.OpenUI e)
     {
@@ -100,12 +84,10 @@ public class UIMgr : Obj
         if (uis.ContainsKey(e.UI))
         {
             uis[e.UI].Close();
+            CloseUI(uis[e.UI]);
             return;
         }
     }
-
-    #region 私有方法
-
     /// <summary>
     /// 加载ui
     /// </summary>

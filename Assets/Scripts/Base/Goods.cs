@@ -2,9 +2,11 @@ using Tar;
 using LitJson;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
-/// 商品类
+/// 商品数据类
 /// </summary>
 public class Goods : BaseData
 {
@@ -52,6 +54,14 @@ public class Goods : BaseData
         this.Num = num > 0 ? num : 0;
         Subtotal = Price * Num;
     }
+    /// <summary>
+    /// 获取小计金额
+    /// </summary>
+    /// <returns></returns>
+    public double GetTotalMoney()
+    {
+        return this.Num * this.Price;
+    }
     // 添加库存
     public void AddStock(int num)
     {
@@ -72,5 +82,116 @@ public class Goods : BaseData
     protected override void Delete()
     {
 
+    }
+}
+
+/// <summary>
+/// 商品列表项
+/// </summary>
+public class GoodsItem : UIElement
+{
+    GameObject select;// 选中高亮
+    Text index;
+    Text goods_name;
+    Text type;
+    Text price;
+    Text stock;
+    Text desc;
+    Text num;
+    Text total;
+    public Goods data;// 数据
+    public delegate void OnItemClick(GoodsItem item);
+    public OnItemClick ClickFunc;
+    protected override void Initialize()
+    {
+        select = Root.Get(this, "select");
+        index = Root.GetControl<Text>(this, "idx");
+        goods_name = Root.GetControl<Text>(this, "name");
+        type = Root.GetControl<Text>(this, "type");
+        price = Root.GetControl<Text>(this, "price");
+        stock = Root.GetControl<Text>(this, "stock");
+        desc = Root.GetControl<Text>(this, "desc");
+        num = Root.GetControl<Text>(this, "num");
+        total = Root.GetControl<Text>(this, "total");
+        // 信息列表
+        SetTypeShow(true);
+        SetStockShow(true);
+        SetDescShow(true);
+        // 收银列表
+        SetNumShow(true);
+        SetTotalShow(true);
+    }
+    protected override void RegEvents()
+    {
+        Root.SetBtnEvent(this.gameObject, OnClick);
+    }
+    public void RefreshData(Goods data)
+    {
+        this.data = data;
+        this.gameObject.name = data.Id.ToString();
+        index.text = data.Id.ToString();
+        goods_name.text = data.Name;
+        type.text = data.GetTypeName();
+        price.text = data.Price.ToString();
+        stock.text = data.Stock.ToString();
+        desc.text = data.Tips.ToString();
+        num.text = data.Num.ToString();
+        total.text = data.GetTotalMoney().ToString();
+    }
+    /// <summary>
+    /// 类型参数显示状态
+    /// </summary>
+    public void SetTypeShow(bool show)
+    {
+        Root.SetActive(type, show);
+    }
+    /// <summary>
+    /// 库存参数显示状态
+    /// </summary>
+    public void SetStockShow(bool show)
+    {
+        Root.SetActive(stock, show);
+    }
+    /// <summary>
+    /// 设置描述参数显示状态
+    /// </summary>
+    public void SetDescShow(bool show)
+    {
+        Root.SetActive(desc, show);
+    }
+    /// <summary>
+    /// 设置购买次数参数显示状态
+    /// </summary>
+    public void SetNumShow(bool show)
+    {
+        Root.SetActive(num, show);
+    }
+    /// <summary>
+    /// 设置小计参数显示状态
+    /// </summary>
+    public void SetTotalShow(bool show)
+    {
+        Root.SetActive(total, show);
+    }
+    public void SelectState(bool is_select)
+    {
+        select.SetActive(is_select);
+    }
+    public void OnClick()
+    {
+        if (ClickFunc != null)
+            ClickFunc(this);
+    }
+    protected override void OnEnable()
+    {
+    }
+    protected override void OnUpdate()
+    {
+    }
+    protected override void OnDisable()
+    {
+    }
+    protected override void OnDestroy()
+    {
     }
 }

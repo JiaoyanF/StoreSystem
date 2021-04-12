@@ -21,6 +21,7 @@ public abstract class UI : MonoBehaviour, IDisposable
     public int HashID { get; private set; }
     private Map<int, UIElement> child = new Map<int, UIElement>();// 子元素
     public NetMgr NetMgr { get { return ui_mgr.NetMgr; } }
+    protected List<EventMgr.Handler> event_handlers = new List<EventMgr.Handler>();
 
     public void InitData(ResourcesMgr res)
     {
@@ -109,7 +110,13 @@ public abstract class UI : MonoBehaviour, IDisposable
     protected virtual void OnDestroy() { }
     public void Dispose()
     {
-        Destroy(this.gameObject);
+        foreach (var item in event_handlers)
+        {
+            UnRegEventHandler(item);
+        }
+        event_handlers.Clear();
+        event_handlers = null;
+        Destroy(Asset);
     }
 
     public void Show(object[] Args = null)
@@ -117,18 +124,18 @@ public abstract class UI : MonoBehaviour, IDisposable
         if (Args != null)
             this.context = Args;
         ui_mgr.ShowUI(this);
+        // 面板为活跃状态时刷新界面
         SetActive(this, false);
         SetActive(this, true);
     }
+    /// <summary>
+    /// 关闭面板
+    /// </summary>
     public void Close()
     {
         ui_mgr.CloseUI(this);
         SetActive(this, false);
-        Destroy(Asset);
-    }
-    public void Close(string ui_name)
-    {
-        ui_mgr.CloseUI(ui_name);
+        Dispose();
     }
     public void SetActive<T>(T obj, bool active) where T : Component
     {
@@ -146,6 +153,21 @@ public abstract class UI : MonoBehaviour, IDisposable
     public virtual void FireEvent(Event e)
     {
         this.ui_mgr.FireEvent(e);
+    }
+    public EventMgr.Handler RegEventHandler<T>(EventMgr.OnEventRecv<T> recv) where T : Event
+    {
+        EventMgr.Handler h = this.ui_mgr.system_mgr.RegEventHandler<T>(recv);
+        if (event_handlers == null)
+            return null;
+        this.event_handlers.Add(h);
+        return h;
+    }
+    public void UnRegEventHandler(EventMgr.Handler h)
+    {
+        if (h == null || this.event_handlers == null || this.event_handlers.Count == 0)
+            return;
+        if (this.event_handlers.Remove(h))
+            this.ui_mgr.system_mgr.UnregEventHandler(h);
     }
 
     /// <summary>
@@ -170,7 +192,7 @@ public abstract class UI : MonoBehaviour, IDisposable
     /// <param name="img_name"></param>
     public void ChangeBG(string img_name)
     {
-        Texture2D tex = ui_mgr.ResMgr.LoadRamImage<Texture2D>(img_name);
+        Texture2D tex = ui_mgr.ResMgr.LoadResource<Texture2D>(SysDefine.RawImagePath + img_name);
         ui_mgr.BG.texture = tex;
     }
 
@@ -224,7 +246,11 @@ public abstract class UI : MonoBehaviour, IDisposable
     /// <param name="target">目标名</param>
     public T GetControl<T>(Component own, string target) where T : Component
     {
-        return Tool.FindChild(own.transform, target).gameObject.GetComponent<T>();
+        return GetControl<T>(Tool.FindChild(own.transform, target).gameObject);
+    }
+    public T GetControl<T>(GameObject own, string target) where T : Component
+    {
+        return GetControl<T>(Tool.FindChild(own.transform, target).gameObject);
     }
     public T GetControl<T>(GameObject own) where T : Component
     {
@@ -253,10 +279,6 @@ public abstract class UI : MonoBehaviour, IDisposable
     public void SetText<T>(GameObject obj, object str) where T : Component
     {
         (obj.GetComponent<T>() as Text).text = str.ToString();
-    }
-    public void SetText<T>(T tex, object str) where T : Component
-    {
-        (tex as Text).text = str.ToString();
     }
 
     #endregion
@@ -289,6 +311,7 @@ public abstract class UIElement : MonoBehaviour, IDisposable
     protected virtual void OnDestroy() { }
     public void Dispose()
     {
+        Root.SetActive(this, false);
         Destroy(this.gameObject);
     }
     internal void DoInitIfDont()

@@ -24,6 +24,7 @@ public class SystemMgr : EventMgr
         GetSingleT<NetMgr>();// 网络管理器
         GetSingleT<ResourcesMgr>();// 创建资源管理器
         GetSingleT<UIMgr>();// 创建ui管理器
+        GetSingleT<DataMgr>();// 创建数据管理器
 
         Loom = GetSingleT<ResourcesMgr>().LoadAsset<Loom>(this, "Loom");
         Loom.system_mgr = this;

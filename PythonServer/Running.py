@@ -30,7 +30,7 @@ def Verify(target, args):
 
 # 获取商品数据
 def GetGoodsData(target, args):
-    result = {'result': False}
+    result = {'type': "get", 'result': False}
     if len(args) == 2:
         cursor = Event.FireEvent("FindData", "Goods", args).fetchall()
     else:
@@ -42,27 +42,29 @@ def GetGoodsData(target, args):
 
 
 def AddGoods(target, data):
-    result = {'result': False}
+    result = {'type': "add", 'result': False, }
     # print("添加商品数据:{0}".format(data))
     if data is not None:
         result['result'], result['reason'] = Event.FireEvent("AddData", "Goods", data['Id'], data['Name'], data['Stock'], data['Type'], data['Price'], data['Desc'])
     else:
         result['result'] = False
         result['reason'] = "添加商品数据为空！"
+    if result['result']:
+        result['data'] = Event.FireEvent("FindData", "Goods", data['Id']).fetchall()[0]
     Event.FireEvent("SendMessage", "goods:add", result, tar=target)
 
 
 def DeleteGoods(target, data):
-    result = {'result': False}
+    result = {'type': "delete", 'result': False, }
     print("删除商品数据:{0}".format(data))
     result['result'], result['reason'] = Event.FireEvent("DeleteData", "Goods", "id", data)
     if result['result'] is True:
-        result['data'] = Event.FireEvent("FindData", "Goods").fetchall()
+        result['id'] = data
     Event.FireEvent("SendMessage", "goods:delete", result, tar=target)
 
 
 def UpdateGoods(target, data):
-    result = {'result': False}
+    result = {'type': "update", 'result': False}
     print("修改商品数据:{0}".format(data))
     now_data = Event.FireEvent("FindData", "Goods", "id", data['Id'])
     head_info = now_data.description  # 表头
@@ -72,4 +74,6 @@ def UpdateGoods(target, data):
         if original[field[0]] == data[field[0].title()]:
             continue
         result['result'], result['reason'] = Event.FireEvent("UpData", "Goods", field[0], data[field[0].title()], str(data['Id']))
+    if result['result']:
+        result['data'] = Event.FireEvent("FindData", "Goods", data['Id']).fetchall()[0]
     Event.FireEvent("SendMessage", "goods:update", result, tar=target)

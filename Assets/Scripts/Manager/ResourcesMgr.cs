@@ -67,26 +67,22 @@ public class ResourcesMgr : Obj
     /// <summary>
     /// 获取预制体资源
     /// </summary>
-    public T LoadPrefab<T>(string path) where T : UnityEngine.Object
+    public T LoadPrefab<T>(string prefab_name) where T : UnityEngine.Object
     {
-        if (ht.Contains(path))
+        if (ht.Contains(prefab_name))
         {
-            return ht[path] as T;
+            return ht[prefab_name] as T;
         }
-        T TResource = Resources.Load<T>(SysDefine.PrefabPath + path);
-        if (TResource == null)
-        {
-            Debug.LogError(GetType() + "资源找不到，path = " + path);
-        }
-        ht.Add(path, TResource);
+        T TResource = LoadResource<T>(SysDefine.PrefabPath + prefab_name);
+        ht.Add(prefab_name, TResource);
         return TResource;
     }
-    public T LoadRamImage<T>(string img_name)where T : UnityEngine.Object
+    public T LoadResource<T>(string path)where T : UnityEngine.Object
     {
-        T ass = Resources.Load<T>(SysDefine.RawImagePath + img_name);
+        T ass = Resources.Load<T>(path);
         if (ass == null)
         {
-            Debug.LogError(GetType() + "资源找不到，path = " + img_name);
+            Debug.LogError(GetType() + "资源找不到，path = " + path);
         }
         return ass;
     }
