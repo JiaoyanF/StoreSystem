@@ -19,7 +19,6 @@ public abstract class UI : MonoBehaviour, IDisposable
     public string Name { get; private set; }// ui名
     private GameObject Asset;
     public int HashID { get; private set; }
-    private Map<int, UIElement> child = new Map<int, UIElement>();// 子元素
     public NetMgr NetMgr { get { return ui_mgr.NetMgr; } }
     protected List<EventMgr.Handler> event_handlers = new List<EventMgr.Handler>();
 
@@ -110,9 +109,9 @@ public abstract class UI : MonoBehaviour, IDisposable
     protected virtual void OnDestroy() { }
     public void Dispose()
     {
-        foreach (var item in event_handlers)
+        for (int i = 0; i < event_handlers.Count; i++)
         {
-            UnRegEventHandler(item);
+            UnRegEventHandler(event_handlers[i]);
         }
         event_handlers.Clear();
         event_handlers = null;
@@ -166,8 +165,9 @@ public abstract class UI : MonoBehaviour, IDisposable
     {
         if (h == null || this.event_handlers == null || this.event_handlers.Count == 0)
             return;
-        if (this.event_handlers.Remove(h))
+        if (this.event_handlers.Contains(h))
             this.ui_mgr.system_mgr.UnregEventHandler(h);
+        this.event_handlers.Remove(h);
     }
 
     /// <summary>
@@ -182,7 +182,6 @@ public abstract class UI : MonoBehaviour, IDisposable
         obj.SetActive(false);
         T ele = Tool.GetOrAddComponent<T>(obj);
         ele.Root = root;
-        child.Add(ele.HashID, ele);
         return ele;
     }
 

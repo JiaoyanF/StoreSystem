@@ -39,8 +39,8 @@ public class GoodsInfoUI : UI
         SetBtnEvent(Get(this, "mask"), delegate () { Close(); });
         SetBtnEvent(Ensure, SureBtnClick);
         SetBtnEvent(Reset, ResetBtnClick);
-        NetMgr.RegEvent(NetTag.Goods.AddGoods, GetResult);
-        NetMgr.RegEvent(NetTag.Goods.UpdateGoods, GetResult);
+        RegEventHandler<Events.GoodsEve.Add>(GetResult);
+        RegEventHandler<Events.GoodsEve.Update>(GetResult);
     }
     private void SureBtnClick()
     {
@@ -87,15 +87,24 @@ public class GoodsInfoUI : UI
         NetMgr.SendMessage(NetTag.Goods.AddGoods, god);
     }
     // 添加商品结果
-    private void GetResult(JsonData con)
+    private void GetResult(Obj sender, Events.GoodsEve.Add e)
     {
-        if (Convert.ToBoolean(con["result"].ToString()))
+        if (e.Result)
         {
-            NetMgr.SendMessage(NetTag.Goods.GetData);
             Close();
         }else
         {
-            FireEvent(new Events.UI.OpenUI("CommonTips", con["reason"].ToString()));
+            FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
+        }
+    }
+    private void GetResult(Obj sender, Events.GoodsEve.Update e)
+    {
+        if (e.Result)
+        {
+            Close();
+        }else
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
         }
     }
     private void ResetBtnClick()

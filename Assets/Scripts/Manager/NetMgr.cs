@@ -184,5 +184,7 @@ public struct NetTag
         public const string AddGoods = "goods:add";// 添加商品
         public const string DeleteGoods = "goods:delete";// 删除商品
         public const string UpdateGoods = "goods:update";// 修改商品信息
+        public const string AddShoping = "goods:add_shop";// 添加商品到购物清单
+        public const string Settlement = "goods:settle";// 结账
     }
 }

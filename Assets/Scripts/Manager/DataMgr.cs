@@ -24,6 +24,8 @@ public class DataMgr : Obj
         NetMgr.RegEvent(NetTag.Goods.UpdateGoods, GoodsResult);
         NetMgr.RegEvent(NetTag.Goods.GetData, GoodsResult);
         NetMgr.RegEvent(NetTag.Goods.DeleteGoods, GoodsResult);
+        NetMgr.RegEvent(NetTag.Goods.AddShoping, GoodsResult);
+        NetMgr.RegEvent(NetTag.Goods.Settlement, GoodsResult);
     }
     /// <summary>
     /// 登录数据
@@ -72,6 +74,15 @@ public class DataMgr : Obj
                     FireEvent(new Events.GoodsEve.Delete(Convert.ToInt32(con["id"].ToString())));
                 else
                     FireEvent(new Events.GoodsEve.Delete(con["reason"].ToString()));
+                break;
+            case "shop":
+                if (Convert.ToBoolean(con["result"].ToString()))
+                    FireEvent(new Events.GoodsEve.AddStop(con["data"], Convert.ToInt32(con["num"].ToString())));
+                else
+                    FireEvent(new Events.GoodsEve.AddStop(con["reason"].ToString()));
+                break;
+            case "settle":
+                FireEvent(new Events.GoodsEve.Settlement(Convert.ToBoolean(con["result"].ToString()), con["reason"].ToString()));
                 break;
             default:
                 Log.Debug("操作类型有误：{0}", con["type"]);

@@ -210,12 +210,16 @@ public static class Events
         public struct Get : Event
         {
             public bool Result;
-            public JsonData Data;
+            public List<Goods> Data;
             public string Reason;
             public Get(JsonData json)
             {
                 this.Result = true;
-                this.Data = json;
+                this.Data = new List<Goods>();
+                foreach (JsonData item in json)
+                {
+                    this.Data.Add(new Goods(item));
+                }
                 this.Reason = null;
             }
             public Get(string reason)
@@ -285,6 +289,43 @@ public static class Events
             {
                 this.Result = false;
                 this.Id = -1;
+                this.Reason = reason;
+            }
+        }
+        /// <summary>
+        /// 添加购物车
+        /// </summary>
+        public struct AddStop : Event
+        {
+            public bool Result;
+            public Goods Data;
+            public int Num;
+            public string Reason;
+            public AddStop(JsonData json, int num)
+            {
+                this.Result = true;
+                this.Data = new Goods(json);
+                this.Num = num;
+                this.Reason = null;
+            }
+            public AddStop(string reason)
+            {
+                this.Result = false;
+                this.Data = null;
+                this.Num = -1;
+                this.Reason = reason;
+            }
+        }
+        /// <summary>
+        /// 结账
+        /// </summary>
+        public struct Settlement : Event
+        {
+            public bool Result;
+            public string Reason;
+            public Settlement(bool result, string reason = null)
+            {
+                this.Result = result;
                 this.Reason = reason;
             }
         }

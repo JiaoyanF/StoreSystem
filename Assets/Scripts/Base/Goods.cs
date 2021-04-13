@@ -41,13 +41,6 @@ public class Goods : BaseData
     {
         return Def.GoodsType.Convert(name) == Type;
     }
-    // 更新数据
-    public void Update(Goods new_data)
-    {
-        Log.Debug("修改数据");
-        UpdatePrice(new_data.Price);
-        UpdateStock(new_data.Stock);
-    }
     // 设置购买数量
     public void SetBuyNum(int num)
     {
@@ -113,13 +106,6 @@ public class GoodsItem : UIElement
         desc = Root.GetControl<Text>(this, "desc");
         num = Root.GetControl<Text>(this, "num");
         total = Root.GetControl<Text>(this, "total");
-        // 信息列表
-        SetTypeShow(true);
-        SetStockShow(true);
-        SetDescShow(true);
-        // 收银列表
-        SetNumShow(true);
-        SetTotalShow(true);
     }
     protected override void RegEvents()
     {
@@ -137,6 +123,32 @@ public class GoodsItem : UIElement
         desc.text = data.Tips.ToString();
         num.text = data.Num.ToString();
         total.text = data.GetTotalMoney().ToString();
+    }
+    /// <summary>
+    /// 展示信息列表格式
+    /// </summary>
+    public void SetInfoListShow()
+    {
+        // 信息列表
+        SetTypeShow(true);
+        SetStockShow(true);
+        SetDescShow(true);
+        // 收银列表
+        SetNumShow(false);
+        SetTotalShow(false);
+    }
+    /// <summary>
+    /// 展示收银列表格式
+    /// </summary>
+    public void SetCashierListShow()
+    {
+        // 信息列表
+        SetTypeShow(false);
+        SetStockShow(false);
+        SetDescShow(false);
+        // 收银列表
+        SetNumShow(true);
+        SetTotalShow(true);
     }
     /// <summary>
     /// 类型参数显示状态

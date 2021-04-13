@@ -23,7 +23,7 @@ def InitEvent():
     RegEvent("goods:add", Running.AddGoods)
     RegEvent("goods:delete", Running.DeleteGoods)
     RegEvent("goods:update", Running.UpdateGoods)
-
+    RegEvent("goods:add_shop", Running.AddShop)
 
 
 # 触发事件

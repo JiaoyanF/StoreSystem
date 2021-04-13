@@ -31,7 +31,9 @@ def Verify(target, args):
 # 获取商品数据
 def GetGoodsData(target, args):
     result = {'type': "get", 'result': False}
-    if len(args) == 2:
+    if type(args) is int:
+        cursor = Event.FireEvent("FindData", "Goods", "id", args).fetchall()
+    elif len(args) == 2:
         cursor = Event.FireEvent("FindData", "Goods", args).fetchall()
     else:
         cursor = Event.FireEvent("FindData", "Goods").fetchall()
@@ -45,12 +47,12 @@ def AddGoods(target, data):
     result = {'type': "add", 'result': False, }
     # print("添加商品数据:{0}".format(data))
     if data is not None:
-        result['result'], result['reason'] = Event.FireEvent("AddData", "Goods", data['Id'], data['Name'], data['Stock'], data['Type'], data['Price'], data['Desc'])
+        result['result'], result['reason'] = Event.FireEvent("AddData", "Goods", data['Id'], data['Name'], data['Stock'], data['Type'], data['Price'], data['Tips'])
     else:
         result['result'] = False
         result['reason'] = "添加商品数据为空！"
     if result['result']:
-        result['data'] = Event.FireEvent("FindData", "Goods", data['Id']).fetchall()[0]
+        result['data'] = Event.FireEvent("FindData", "Goods", "id", data['Id']).fetchall()[0]
     Event.FireEvent("SendMessage", "goods:add", result, tar=target)
 
 
@@ -75,5 +77,18 @@ def UpdateGoods(target, data):
             continue
         result['result'], result['reason'] = Event.FireEvent("UpData", "Goods", field[0], data[field[0].title()], str(data['Id']))
     if result['result']:
-        result['data'] = Event.FireEvent("FindData", "Goods", data['Id']).fetchall()[0]
+        result['data'] = Event.FireEvent("FindData", "Goods", "id", data['Id']).fetchall()[0]
     Event.FireEvent("SendMessage", "goods:update", result, tar=target)
+
+
+def AddShop(target, data):
+    result = {'type': "shop", 'result': False}
+    item = Event.FireEvent("FindData", "Goods", "id", data['id']).fetchall()[0]
+    if item['stock'] >= int(data['num']):
+        result['result'] = True
+        result['data'] = item
+        result['num'] = data['num']
+    else:
+        result['result'] = False
+        result['reason'] = "库存不足！"
+    Event.FireEvent("SendMessage", "goods:add_shop", result, tar=target)

@@ -27,7 +27,6 @@ public class LoginPanel : UIElement
         Root.SetBtnEvent(Root.Get(this, "login"), LoadData);
         Root.SetBtnEvent(Root.Get(this, "reset"), ResetData);
         Root.RegEventHandler<Events.Login.Confirm>(LoginResult);
-        // Root.NetMgr.RegEvent(NetTag.Login.LoginVerify, LoginResult);
     }
     protected override void OnEnable()
     {
@@ -75,18 +74,6 @@ public class LoginPanel : UIElement
         }
         Root.ui_mgr.Loom.LoginUser(e.Staff);
         Root.FireEvent(new Events.UI.OpenUI("MainForm"));
-        // if (Tool.ContainsKey(con, "result") && Boolean.Parse(con["result"].ToString()))
-        // {
-        //     if (Tool.ContainsKey(con, "user"))
-        //     {
-        //         Staff user = new Staff(con["user"]);
-        //         Root.ui_mgr.Loom.LoginUser(user);
-        //     }
-        //     Root.FireEvent(new Events.UI.OpenUI("MainForm"));
-        // }else
-        // {
-        //     Log.Debug("登录失败：{0}", con["reason"].ToString());
-        // }
     }
     /// <summary>
     /// 重置

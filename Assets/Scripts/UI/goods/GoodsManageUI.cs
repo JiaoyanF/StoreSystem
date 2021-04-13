@@ -48,12 +48,9 @@ public class GoodsManageUI : UI
         RegEventHandler<Events.GoodsEve.Add>(AddData);
         RegEventHandler<Events.GoodsEve.Update>(UpdateData);
         RegEventHandler<Events.GoodsEve.Delete>(DeleteData);
-        // NetMgr.RegEvent(NetTag.Goods.GetData, RefreshGoodsList);
-        // NetMgr.RegEvent(NetTag.Goods.DeleteGoods, RefreshGoodsList);
     }
     public void ClickAddBtn()
     {
-        Log.Debug("添加商品");
         FireEvent(new Events.UI.OpenUI("GoodsInfo"));
     }
     public void ClickModBtn()
@@ -64,9 +61,6 @@ public class GoodsManageUI : UI
             return;
         }
         FireEvent(new Events.UI.OpenUI("GoodsInfo", CurrItem.data));
-        // FireEvent(new Events.UI.OpenUI("CommonModify", CurrItem.data));
-        // CommonModifyUI ui = ui_mgr.GetUI<CommonModifyUI>("CommonModify");
-        // ui.SetClass(CurrItem.data);
     }
     public void ClickDelBtn()
     {
@@ -143,13 +137,13 @@ public class GoodsManageUI : UI
         }
         GoodsItem new_item = Item.Clone<GoodsItem>();
         new_item.RefreshData(e.NewGoods);
-        new_item.SetNumShow(true);
-        new_item.SetTotalShow(true);
+        new_item.SetInfoListShow();
         new_item.ClickFunc = ClickFunc;
         for (int i = 0; i < GoodsList.Count; i++)
         {
             if (i + 1 < GoodsList.Count && GoodsList[i + 1].data.Id > e.NewGoods.Id)
             {
+                new_item.transform.SetSiblingIndex(i + 2);// 位置索引+2是因为还有一个"初号机"的位置要算上_(:3」∠)_
                 GoodsList.Insert(i, new_item);
                 break;
             }
@@ -198,43 +192,19 @@ public class GoodsManageUI : UI
             }
         }
     }
-    // 刷新商品列表
-    void RefreshGoodsList(JsonData con)
-    {
-        if (Tool.ContainsKey(con, "result") && Convert.ToBoolean(con["result"].ToString()) == false)
-        {
-            if (Tool.ContainsKey(con, "reason"))
-                FireEvent(new Events.UI.OpenUI("CommonTips", con["reason"].ToString()));
-            return;
-        }
-
-        if (Tool.ContainsKey(con, "data"))
-            CloneGoodsItem(con["data"]);
-        
-        Screen.value = 0;
-        Search.text = string.Empty;
-    }
     // 克隆商品项们
-    private void CloneGoodsItem(JsonData data)
+    private void CloneGoodsItem(List<Goods> data)
     {
-        GoodsList = Item.Clone<GoodsItem>(GoodsList, Tool.GetJsonCount(data));
+        GoodsList = Item.Clone<GoodsItem>(GoodsList, data.Count);
         int index = 0;
-        foreach (JsonData item in data)
+        foreach (Goods item in data)
         {
-            GoodsList[index].RefreshData(new Goods(item));
-            GoodsList[index].SetNumShow(true);
-            GoodsList[index].SetTotalShow(true);
+            GoodsList[index].RefreshData(item);
+            GoodsList[index].SetInfoListShow();
             GoodsList[index].ClickFunc = ClickFunc;
             Log.Debug("{0}顺序:{1}",GoodsList[index].name,GoodsList[index].transform.GetSiblingIndex());
             index++;
         }
-        // foreach (JsonData item in data)
-        // {
-        //     GoodsItem goods_module = Item.Clone<GoodsItem>();
-        //     goods_module.ClickFunc = ClickFunc;
-        //     goods_module.RefreshData(new Goods(item));
-        //     GoodsList.Add(goods_module);
-        // }
         Log.Debug("商品个数：{0}", GoodsList.Count);
     }
     /// <summary>
