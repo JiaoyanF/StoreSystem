@@ -94,14 +94,13 @@ public class Tool
         return gameObject.scene.name != null;
     }
     /// <summary>
-    /// 判断json数据是否有该字段
+    /// 判断json数据是否有该字段，且值不为空
     /// </summary>
     public static bool ContainsKey(JsonData json, string key_name)
     {
         bool res = false;
-        if (((IDictionary)json).Contains(key_name))
+        if (((IDictionary)json).Contains(key_name) && (IDictionary)json[key_name] != null)
         {
-            //string valuestr = (string)Json[KeyName];
             res = true;
         }
         return res;

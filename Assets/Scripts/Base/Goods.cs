@@ -48,6 +48,23 @@ public class Goods : BaseData
         Subtotal = Price * Num;
     }
     /// <summary>
+    /// 添加购买数量
+    /// </summary>
+    /// <param name="num"></param>
+    public void AddBuyNum(int num)
+    {
+        this.Num = num > 0 ? this.Num + num : this.Num;
+        Subtotal = Price * Num;
+    }
+    /// <summary>
+    /// 库存是否满足
+    /// </summary>
+    /// <returns></returns>
+    public bool MeetStock(int num = -1)
+    {
+        return num > 0 ? this.Stock >= num : this.Stock >= this.Num;
+    }
+    /// <summary>
     /// 获取小计金额
     /// </summary>
     /// <returns></returns>

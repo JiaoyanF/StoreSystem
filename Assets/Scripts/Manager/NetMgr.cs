@@ -187,4 +187,8 @@ public struct NetTag
         public const string AddShoping = "goods:add_shop";// 添加商品到购物清单
         public const string Settlement = "goods:settle";// 结账
     }
+    public struct SalesRecord
+    {
+        public const string GetRecord = "sales:record";// 销售数据
+    }
 }

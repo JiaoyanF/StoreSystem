@@ -202,7 +202,7 @@ public class GoodsManageUI : UI
             GoodsList[index].RefreshData(item);
             GoodsList[index].SetInfoListShow();
             GoodsList[index].ClickFunc = ClickFunc;
-            Log.Debug("{0}顺序:{1}",GoodsList[index].name,GoodsList[index].transform.GetSiblingIndex());
+            // Log.Debug("{0}顺序:{1}",GoodsList[index].name,GoodsList[index].transform.GetSiblingIndex());
             index++;
         }
         Log.Debug("商品个数：{0}", GoodsList.Count);

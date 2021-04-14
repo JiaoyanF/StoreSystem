@@ -42,7 +42,8 @@ def Init():
 # 连接线程
 def ConnectionThread(conn, addr):
     tar = str(addr[0]) + ":" + str(addr[1])
-    Def.Threads[tar] = conn
+    Def.Threads[tar] = dict()
+    Def.Threads[tar]["conn"] = conn
     print('*新的连接：{0}'.format(addr))
     SendMessage(tar, '成功连接服务器')
     while 1:
@@ -67,21 +68,21 @@ def SendMessage(target, args):
                 var = json.dumps(var)
             s += var
     print('发送：{0}'.format(s))
-    Def.Threads[target].send(s.encode('utf-8'))
+    Def.Threads[target]["conn"].send(s.encode('utf-8'))
 
 
 # 接收消息
 def ReceiveMessages(target, mes):
     index = mes.find('#')
     if index == -1:
-        Event.FireEvent(mes, tar=target)
         print('接收：{0}'.format(mes))
+        Event.FireEvent(mes, tar=target)
         return
     tag = mes[:index]
     # args = mes[index + 1:]
     args = json.loads(mes[index + 1:])
     # args = mes[index + 1:].split(',')
-    print('接收：tag={1},args={2}'.format(mes, tag, args))
+    print('接收：tag={0}, data={1}'.format(mes, tag, args))
     Event.FireEvent(tag, args, tar=target)
     # if tag == 'login:request':
     #     DBControl.AddData('Goods', 100004, '牛奶', 500, 1)

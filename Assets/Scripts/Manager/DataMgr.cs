@@ -82,7 +82,13 @@ public class DataMgr : Obj
                     FireEvent(new Events.GoodsEve.AddStop(con["reason"].ToString()));
                 break;
             case "settle":
-                FireEvent(new Events.GoodsEve.Settlement(Convert.ToBoolean(con["result"].ToString()), con["reason"].ToString()));
+                if (Tool.ContainsKey(con, "reason"))
+                {
+                    FireEvent(new Events.GoodsEve.Settlement(Convert.ToBoolean(con["result"].ToString()), con["reason"].ToString()));
+                }else
+                {
+                    FireEvent(new Events.GoodsEve.Settlement(Convert.ToBoolean(con["result"].ToString())));
+                }
                 break;
             default:
                 Log.Debug("操作类型有误：{0}", con["type"]);

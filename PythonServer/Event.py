@@ -24,15 +24,20 @@ def InitEvent():
     RegEvent("goods:delete", Running.DeleteGoods)
     RegEvent("goods:update", Running.UpdateGoods)
     RegEvent("goods:add_shop", Running.AddShop)
+    RegEvent("goods:settle", Running.Settle)
+    RegEvent("sales:record", Running.GetSalesRecord)
 
 
 # 触发事件
 def FireEvent(tag, *args, **kwargs):
     if Events.get(tag) is None:
         return
-    if len(args) == 1:
-        args = args[0]
-    print('事件参数：{0}'.format(args))
+    print('事件参数类型：{0},事件参数:{1}'.format(type(args), args))
+    if isinstance(args, tuple):
+        if len(args) == 0:
+            args = None
+        elif len(args) == 1:
+            args = args[0]
     if len(kwargs) == 0:
         return Events[tag](args)
     else:

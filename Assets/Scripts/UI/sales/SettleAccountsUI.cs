@@ -51,6 +51,7 @@ public class SettleAccountsUI : UI
         SetBtnEvent(Get(Btns, "Delete"), ClickDeleteBtn);
         SetBtnEvent(Get(Btns, "Settlement"), ClickSettlementBtn);
         RegEventHandler<Events.GoodsEve.AddStop>(AddShopingList);
+        RegEventHandler<Events.GoodsEve.Settlement>(SettlementResult);
     }
     private void ClickAddBtn()
     {
@@ -69,6 +70,9 @@ public class SettleAccountsUI : UI
         data["num"] = NumInput.text;
         NetMgr.SendMessage(NetTag.Goods.AddShoping, data);
     }
+    /// <summary>
+    /// 移除商品
+    /// </summary>
     private void ClickDeleteBtn()
     {
         if (CurrItem == null)
@@ -86,6 +90,9 @@ public class SettleAccountsUI : UI
             }
         }
     }
+    /// <summary>
+    /// 点击结算
+    /// </summary>
     private void ClickSettlementBtn()
     {
         if (GoodsList.Count == 0)
@@ -128,8 +135,8 @@ public class SettleAccountsUI : UI
         {
             if (e.Data.Id == item.data.Id)
             {
-                item.data.Num += e.Num;
-                if (item.data.Num > item.data.Stock)
+                item.data.AddBuyNum(e.Num);
+                if (item.data.MeetStock())
                 {
                     FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("BUT_STOCK_ERR_TIPS", item.data.Stock.ToString())));
                     return;
@@ -173,6 +180,21 @@ public class SettleAccountsUI : UI
         tot_count.text = Localization.Format("GOODS_PRICE_TITLE", count.ToString());
         tot_num.text = Localization.Format("GOODS_NUM_TITLE", GoodsList.Count.ToString());
         tot_money.text = Localization.Format("GOODS_MONEY_TITLE", money.ToString());
+    }
+    private void SettlementResult(Obj sender, Events.GoodsEve.Settlement e)
+    {
+        if (e.Result)
+        {
+            foreach (var item in GoodsList)
+            {
+                item.Dispose();
+            }
+            GoodsList.Clear();
+        }else
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
+            return;
+        }
     }
     protected override void OnEnable()
     {
@@ -250,7 +272,12 @@ public class SettlementPanel : UIElement
             Root.FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("SETTLEMENT_NULL_ERR")));
             return;
         }
-        Root.NetMgr.SendMessage(NetTag.Goods.Settlement, "");
+        SalesRecord sales_record = new SalesRecord();
+        sales_record.SalesList = BuyItems;
+
+        Root.NetMgr.SendMessage(NetTag.Goods.Settlement, sales_record);
+        InitData();
+        Root.SetActive(this, false);
     }
     private void InitData()
     {
@@ -262,6 +289,10 @@ public class SettlementPanel : UIElement
     }
     protected override void OnUpdate()
     {
+        if (Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
+            SureBtnClick();
+        }
     }
     protected override void OnDisable()
     {
