@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Text.RegularExpressions;
 
 /// <summary>
 /// 商品数据类
@@ -17,14 +18,29 @@ public class Goods : BaseData
     public int Num;// 购买数量
     public double Subtotal { get; private set; }// 金额小计
     public Goods() { }
+    /// <summary>
+    /// 销售清单实例化
+    /// </summary>
+    /// <param name="data"></param>
+    public Goods(string data)
+    {
+        data = data.Replace("\"", "");
+        string[] strs = Regex.Split(data, ",");
+        if (strs.Length != 4)
+            return;
+        this.Id = int.Parse(strs[0]);
+        this.Num = int.Parse(strs[1]);
+        this.Price = double.Parse(strs[2]);
+        this.Name = strs[3];
+    }
     public Goods(JsonData json)
     {
         this.Tag = Convert.ToInt32(Def.DataList.Goods);
-        this.Id = json["id"] != null ? Convert.ToInt32(json["id"].ToString()) : -1;
+        this.Id = json["id"] != null ? Convert.ToInt32(json["id"].ToString()) : 0;
         this.Name = json["name"] != null ? json["name"].ToString() : string.Empty;
-        this.Price = json["price"] != null ? double.Parse(json["price"].ToString()) : -1f;
-        this.Stock = json["type"] != null ? Convert.ToInt32(json["stock"].ToString()) : -1;
-        this.Type = json["type"] != null ? Convert.ToInt32(json["type"].ToString()) : -1;
+        this.Price = json["price"] != null ? double.Parse(json["price"].ToString()) : 0;
+        this.Stock = json["type"] != null ? Convert.ToInt32(json["stock"].ToString()) : 0;
+        this.Type = json["type"] != null ? Convert.ToInt32(json["type"].ToString()) : 0;
         this.Tips = json["tips"] != null ? json["tips"].ToString() : string.Empty;
     }
     /// <summary>
@@ -88,11 +104,6 @@ public class Goods : BaseData
     {
         Log.Debug("修改库存：{0}", num);
     }
-
-    protected override void Delete()
-    {
-
-    }
 }
 
 /// <summary>
@@ -137,7 +148,7 @@ public class GoodsItem : UIElement
         type.text = data.GetTypeName();
         price.text = data.Price.ToString();
         stock.text = data.Stock.ToString();
-        desc.text = data.Tips.ToString();
+        desc.text = data.Tips;
         num.text = data.Num.ToString();
         total.text = data.GetTotalMoney().ToString();
     }
@@ -146,61 +157,39 @@ public class GoodsItem : UIElement
     /// </summary>
     public void SetInfoListShow()
     {
-        // 信息列表
-        SetTypeShow(true);
-        SetStockShow(true);
-        SetDescShow(true);
-        // 收银列表
-        SetNumShow(false);
-        SetTotalShow(false);
+        Root.SetActive(index, true);
+        Root.SetActive(goods_name, true);
+        Root.SetActive(type, true);
+        Root.SetActive(stock, true);
+        Root.SetActive(desc, true);
+        Root.SetActive(num, false);
+        Root.SetActive(total, false);
     }
     /// <summary>
     /// 展示收银列表格式
     /// </summary>
     public void SetCashierListShow()
     {
-        // 信息列表
-        SetTypeShow(false);
-        SetStockShow(false);
-        SetDescShow(false);
-        // 收银列表
-        SetNumShow(true);
-        SetTotalShow(true);
+        Root.SetActive(index, true);
+        Root.SetActive(goods_name, true);
+        Root.SetActive(num, true);
+        Root.SetActive(total, true);
+        Root.SetActive(type, false);
+        Root.SetActive(stock, false);
+        Root.SetActive(desc, false);
     }
     /// <summary>
-    /// 类型参数显示状态
+    /// 展示销售信息列表格式
     /// </summary>
-    public void SetTypeShow(bool show)
+    public void SetSalesListShow()
     {
-        Root.SetActive(type, show);
-    }
-    /// <summary>
-    /// 库存参数显示状态
-    /// </summary>
-    public void SetStockShow(bool show)
-    {
-        Root.SetActive(stock, show);
-    }
-    /// <summary>
-    /// 设置描述参数显示状态
-    /// </summary>
-    public void SetDescShow(bool show)
-    {
-        Root.SetActive(desc, show);
-    }
-    /// <summary>
-    /// 设置购买次数参数显示状态
-    /// </summary>
-    public void SetNumShow(bool show)
-    {
-        Root.SetActive(num, show);
-    }
-    /// <summary>
-    /// 设置小计参数显示状态
-    /// </summary>
-    public void SetTotalShow(bool show)
-    {
-        Root.SetActive(total, show);
+        Root.SetActive(goods_name, true);
+        Root.SetActive(num, true);
+        Root.SetActive(index, false);
+        Root.SetActive(type, false);
+        Root.SetActive(stock, false);
+        Root.SetActive(desc, false);
+        Root.SetActive(total, false);
     }
     public void SelectState(bool is_select)
     {
@@ -211,16 +200,8 @@ public class GoodsItem : UIElement
         if (ClickFunc != null)
             ClickFunc(this);
     }
-    protected override void OnEnable()
-    {
-    }
-    protected override void OnUpdate()
-    {
-    }
-    protected override void OnDisable()
-    {
-    }
-    protected override void OnDestroy()
-    {
-    }
+    protected override void OnEnable() { }
+    protected override void OnUpdate() { }
+    protected override void OnDisable() { }
+    protected override void OnDestroy() { }
 }

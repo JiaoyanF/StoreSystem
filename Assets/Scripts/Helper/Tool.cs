@@ -133,6 +133,30 @@ public class Tool
         // }
         return members;
     }
+
+    /// <summary>
+    /// DateTime时间格式转换为Unix时间戳格式
+    /// </summary>
+    /// <param name="time">时间</param>
+    /// <returns>double</returns>
+    private static double ConvertDateTimeInt(DateTime time)
+    {
+        DateTime dd = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+        TimeSpan ts = (time - dd);
+        return (Int64)ts.TotalMilliseconds;
+    }
+    /// <summary>        
+    /// 时间戳转为C#格式时间        
+    /// </summary>        
+    /// <param name="timeStamp"></param>        
+    /// <returns></returns>        
+    public static DateTime ConvertStringToDateTime(string timeStamp)
+    {
+        DateTime dtStart = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), TimeZoneInfo.Local);
+        long lTime = long.Parse(timeStamp + "0000");
+        TimeSpan toNow = new TimeSpan(lTime);
+        return dtStart.Add(toNow);
+    }
 }
 
 /// <summary>

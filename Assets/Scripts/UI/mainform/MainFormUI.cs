@@ -74,6 +74,7 @@ public class MainFormUI : UI
     void SalesRecord()
     {
         Log.Debug("销售记录");
+        FireEvent(new Events.UI.OpenUI("SalesRecord"));
     }
     void AddGoods()
     {

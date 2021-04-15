@@ -15,6 +15,7 @@ public class SettleAccountsUI : UI
 {
     public override UILayer Layer { get { return UILayer.Normal; } }
     private GameObject Nav;// 导航栏
+    private InputField VipInput;// 会员号
     private InputField IdInput;// 输入id
     private InputField NumInput;// 输入数量
     private GameObject Btns;// 按钮组
@@ -29,10 +30,12 @@ public class SettleAccountsUI : UI
     private SettlementPanel SettlementPanel;
     List<GoodsItem> GoodsList = new List<GoodsItem>();
     GoodsItem CurrItem;// 当前选中商品项
+    Member CurrVip;// 当前vip信息
     protected override void Initialize()
     {
         Nav = Get(this, "Nav");
         Btns = Get(Nav, "Btns");
+        VipInput = GetControl<InputField>(Nav, "VipInput");
         IdInput = GetControl<InputField>(Nav, "IdInput");
         NumInput = GetControl<InputField>(Nav, "NumInput");
         CurrentInfo = Get(this, "CurrentInfo");
@@ -47,12 +50,44 @@ public class SettleAccountsUI : UI
     }
     protected override void RegEvents()
     {
+        VipInput.onValueChanged.AddListener(VipChange);// 值改变事件
         SetBtnEvent(Get(Btns, "Add"), ClickAddBtn);
         SetBtnEvent(Get(Btns, "Delete"), ClickDeleteBtn);
         SetBtnEvent(Get(Btns, "Settlement"), ClickSettlementBtn);
         RegEventHandler<Events.GoodsEve.AddStop>(AddShopingList);
+        RegEventHandler<Events.GoodsEve.SureSettlement>(Settlement);
         RegEventHandler<Events.GoodsEve.Settlement>(SettlementResult);
+        RegEventHandler<Events.Vip.Get>(VipResult);
     }
+    /// <summary>
+    /// 输入vip
+    /// </summary>
+    /// <param name="str"></param>
+    private void VipChange(string str)
+    {
+        if (str == string.Empty)
+            return;
+        NetMgr.SendMessage(NetTag.Vip.GetData, str);
+    }
+    /// <summary>
+    /// 获取vip结果
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void VipResult(Obj sender, Events.Vip.Get e)
+    {
+        if (e.Result == false)
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
+            return;
+        }
+        if (e.Data.Count != 1)
+            return;
+        CurrVip = e.Data[0];
+    }
+    /// <summary>
+    /// 加入购买列表
+    /// </summary>
     private void ClickAddBtn()
     {
         if (IdInput.text == string.Empty)
@@ -123,6 +158,19 @@ public class SettleAccountsUI : UI
         // Log.Format("当前项：{0}", CurrItem.data.Name);
         RefreshCurrData();
     }
+    /// <summary>
+    /// 请求结算
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void Settlement(Obj sender, Events.GoodsEve.SureSettlement e)
+    {
+        Record sales_record = new Record();
+        sales_record.SalesList = e.Data;
+        if (CurrVip != null)
+            sales_record.Vip = CurrVip.Id;
+        NetMgr.SendMessage(NetTag.Goods.Settlement, sales_record);
+    }
     private void AddShopingList(Obj sender, Events.GoodsEve.AddStop e)
     {
         if (e.Result == false)
@@ -190,24 +238,17 @@ public class SettleAccountsUI : UI
                 item.Dispose();
             }
             GoodsList.Clear();
-        }else
+        }
+        else
         {
             FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
             return;
         }
     }
-    protected override void OnEnable()
-    {
-    }
-    protected override void OnUpdate()
-    {
-    }
-    protected override void OnDisable()
-    {
-    }
-    protected override void OnDestroy()
-    {
-    }
+    protected override void OnEnable() { }
+    protected override void OnUpdate() { }
+    protected override void OnDisable() { }
+    protected override void OnDestroy() { }
 }
 /// <summary>
 /// 结账面板
@@ -272,10 +313,7 @@ public class SettlementPanel : UIElement
             Root.FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("SETTLEMENT_NULL_ERR")));
             return;
         }
-        SalesRecord sales_record = new SalesRecord();
-        sales_record.SalesList = BuyItems;
-
-        Root.NetMgr.SendMessage(NetTag.Goods.Settlement, sales_record);
+        Root.FireEvent(new Events.GoodsEve.SureSettlement(BuyItems));
         InitData();
         Root.SetActive(this, false);
     }
@@ -284,9 +322,7 @@ public class SettlementPanel : UIElement
         actual_input.text = "";
         change = 0;
     }
-    protected override void OnEnable()
-    {
-    }
+    protected override void OnEnable() { }
     protected override void OnUpdate()
     {
         if (Input.GetKeyDown(KeyCode.KeypadEnter))
@@ -294,10 +330,6 @@ public class SettlementPanel : UIElement
             SureBtnClick();
         }
     }
-    protected override void OnDisable()
-    {
-    }
-    protected override void OnDestroy()
-    {
-    }
+    protected override void OnDisable() { }
+    protected override void OnDestroy() { }
 }

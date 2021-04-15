@@ -44,6 +44,18 @@ public class UIMgr : Obj
 
     public void ShowUI(UI ui)
     {
+        // 普通界面关闭其他打开的普通界面
+        if (ui.Layer == UILayer.Normal)
+        {
+            for (uis.Begin(); uis.Next();)
+            {
+                if (uis.Value.Layer == UILayer.Normal)
+                {
+                    uis.Value.Close();
+                }
+            }
+        }
+        // 全屏界面关闭其他所有打开界面
         if (ui.Layer == UILayer.Full)
         {
             for (uis.Begin(); uis.Next();)

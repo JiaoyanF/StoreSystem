@@ -4,6 +4,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Def;
+using LitJson;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 
@@ -22,14 +23,35 @@ public class LockingUI : UI
     }
     protected override void RegEvents()
     {
+        SetBtnEvent(Get(this, "Unlock"), UnlockFunc);
+        SetBtnEvent(Get(this, "Exit"), ui_mgr.Loom.ExitSystem);
+        RegEventHandler<Events.Login.Confirm>(UnlockResult);
     }
-
+    /// <summary>
+    /// 解锁
+    /// </summary>
+    private void UnlockFunc()
+    {
+        JsonData data = new JsonData();
+        data["username"] = un_input.text;
+        data["password"] = ps_input.text;
+        NetMgr.SendMessage(NetTag.Login.LoginVerify, data);
+    }
+    private void UnlockResult(Obj sender, Events.Login.Confirm e)
+    {
+        if (!e.Result)
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("LOGIN_FAIL", e.Reason)));
+            return;
+        }
+        FireEvent(new Events.UI.OpenUI("MainForm"));
+        Close();
+    }
     protected override void OnEnable()
     {
+        un_input.text = ui_mgr.Loom.MainUser.Id.ToString();
     }
-    protected override void OnUpdate()
-    {
-    }
+    protected override void OnUpdate() { }
     protected override void OnDisable() { }
     protected override void OnDestroy() { }
 }

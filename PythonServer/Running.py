@@ -103,14 +103,19 @@ def UpdateGoods(target, data):
 # 添加商品到购物清单
 def AddShop(target, data):
     result = {'type': "shop", 'result': False}
-    item = GetData("Goods", data['id'])[0]
-    if item['stock'] >= int(data['num']):
-        result['result'] = True
-        result['data'] = item
-        result['num'] = data['num']
+    item = GetData("Goods", data['id'])
+    if len(item) == 1:
+        item = item[0]
+        if item['stock'] >= int(data['num']):
+            result['result'] = True
+            result['data'] = item
+            result['num'] = data['num']
+        else:
+            result['result'] = False
+            result['reason'] = "库存不足！"
     else:
         result['result'] = False
-        result['reason'] = "库存不足！"
+        result['reason'] = "没有该商品！"
     Event.FireEvent("SendMessage", "goods:add_shop", result, tar=target)
 
 
@@ -128,19 +133,33 @@ def Settle(target, data):
             result['reason'] = "购买列表中有商品库存不足!"
             break
         money = money + item['Num'] * item['Price']
-        arg = "'" + str(item['Id']) + ":" + str(item['Num']) + "'"
+        arg = str(item['Id']) + "," + str(item['Num']) + "," + str(item['Price']) + "," + str(item['Name'])
         record.append(arg)
         result['result'], result['reason'] = Event.FireEvent("UpData", "Goods", "stock", find['stock'] - item['Num'], str(item['Id']))
-    record_str = ",".join(record)
+    record_str = ";".join(record)
     print("销售清单:{0}".format(record_str))
     index = len(GetData("SalesRecord")) + 1
     now_time = int(time.time())
-    member_id = 0
-    if data['Member'] is not None:
-        member_id = data['Member']['Id']
-    result['result'], result['reason'] = Event.FireEvent("AddData", "SalesRecord", index, now_time, money, Def.Threads[target]["user"]["id"], member_id)
+    member_id = data['Vip']
+    result['result'], result['reason'] = Event.FireEvent("AddData", "SalesRecord", index, now_time, str(record_str), money, Def.Threads[target]["user"]["id"], member_id)
 
     Event.FireEvent("SendMessage", "goods:settle", result, tar=target)
+
+
+# 获取会员数据
+def GetVipData(target, args):
+    result = {'type': "get", 'result': False}
+    print("获取会员数据：{0}".format(args))
+    if args is not None:
+        cursor = GetData("Vip", args)
+    else:
+        cursor = GetData("Vip")
+    if len(cursor) > 0:
+        result['result'] = True
+        result['data'] = cursor
+    else:
+        result['reason'] = "会员为空"
+    Event.FireEvent("SendMessage", "vip:data", result, tar=target)
 
 
 # 获取销售清单
@@ -154,7 +173,9 @@ def GetSalesRecord(target, args):
     if len(cursor) > 0:
         result['result'] = True
         result['data'] = cursor
-    Event.FireEvent("SendMessage", "goods:data", result, tar=target)
+    else:
+        result['reason'] = "销售记录为空"
+    Event.FireEvent("SendMessage", "sales:record", result, tar=target)
 
 
 # 获取员工数据

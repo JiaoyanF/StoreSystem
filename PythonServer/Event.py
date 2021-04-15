@@ -25,6 +25,7 @@ def InitEvent():
     RegEvent("goods:update", Running.UpdateGoods)
     RegEvent("goods:add_shop", Running.AddShop)
     RegEvent("goods:settle", Running.Settle)
+    RegEvent("vip:data", Running.GetVipData)
     RegEvent("sales:record", Running.GetSalesRecord)
 
 

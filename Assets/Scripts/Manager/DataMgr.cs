@@ -26,6 +26,8 @@ public class DataMgr : Obj
         NetMgr.RegEvent(NetTag.Goods.DeleteGoods, GoodsResult);
         NetMgr.RegEvent(NetTag.Goods.AddShoping, GoodsResult);
         NetMgr.RegEvent(NetTag.Goods.Settlement, GoodsResult);
+        // 销售清单
+        NetMgr.RegEvent(NetTag.SalesRecord.GetRecord, SalesRecord);
     }
     /// <summary>
     /// 登录数据
@@ -94,5 +96,13 @@ public class DataMgr : Obj
                 Log.Debug("操作类型有误：{0}", con["type"]);
                 break;
         }
+    }
+
+    private void SalesRecord(JsonData con)
+    {
+        if (Convert.ToBoolean(con["result"].ToString()))
+            FireEvent(new Events.Sales.GetRecord(con["data"]));
+        else
+            FireEvent(new Events.Sales.GetRecord(con["reason"].ToString()));
     }
 }

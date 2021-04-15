@@ -316,8 +316,16 @@ public static class Events
                 this.Reason = reason;
             }
         }
+        public struct SureSettlement : Event
+        {
+            public List<Goods> Data;
+            public SureSettlement(List<Goods> data)
+            {
+                this.Data = data;
+            }
+        }
         /// <summary>
-        /// 结账
+        /// 结账结果
         /// </summary>
         public struct Settlement : Event
         {
@@ -326,6 +334,60 @@ public static class Events
             public Settlement(bool result, string reason = null)
             {
                 this.Result = result;
+                this.Reason = reason;
+            }
+        }
+    }
+    public struct Vip
+    {
+        public struct Get : Event
+        {
+            public bool Result;
+            public List<Member> Data;
+            public string Reason;
+            public Get(JsonData json)
+            {
+                this.Result = true;
+                List<Member> list = new List<Member>();
+                foreach (JsonData item in json)
+                {
+                    list.Add(new Member(item));
+                }
+                this.Data = list;
+                this.Reason = null;
+            }
+            public Get(string reason)
+            {
+                this.Result = false;
+                this.Data = null;
+                this.Reason = reason;
+            }
+        }
+    }
+    /// <summary>
+    /// 销售记录
+    /// </summary>
+    public struct Sales
+    {
+        public struct GetRecord : Event
+        {
+            public bool Result;
+            public List<Record> Data;
+            public string Reason;
+            public GetRecord(JsonData json)
+            {
+                this.Result = true;
+                this.Reason = null;
+                this.Data = new List<Record>();
+                foreach (JsonData item in json)
+                {
+                    this.Data.Add(new Record(item));
+                }
+            }
+            public GetRecord(string reason)
+            {
+                this.Result = false;
+                this.Data = null;
                 this.Reason = reason;
             }
         }

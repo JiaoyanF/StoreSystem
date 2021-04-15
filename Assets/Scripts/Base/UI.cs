@@ -109,6 +109,7 @@ public abstract class UI : MonoBehaviour, IDisposable
     protected virtual void OnDestroy() { }
     public void Dispose()
     {
+        if (event_handlers == null) return;
         for (int i = 0; i < event_handlers.Count; i++)
         {
             UnRegEventHandler(event_handlers[i]);
@@ -366,7 +367,7 @@ public abstract class UIElement : MonoBehaviour, IDisposable
         }
         return list;
     }
-    
+
     /// <summary>
     /// 创建子对象
     /// </summary>
