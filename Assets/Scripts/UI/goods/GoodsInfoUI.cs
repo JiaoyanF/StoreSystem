@@ -65,7 +65,7 @@ public class GoodsInfoUI : UI
             return;
         }
         Goods god = new Goods();
-        god.Id = int.Parse(index_input.text);
+        god.Id = index_input.text;
         god.Name = name_input.text;
         god.Price = double.Parse(price_input.text);
         god.Stock = int.Parse(stock_input.text);
@@ -89,23 +89,23 @@ public class GoodsInfoUI : UI
     // 添加商品结果
     private void GetResult(Obj sender, Events.GoodsEve.Add e)
     {
-        if (e.Result)
-        {
-            Close();
-        }else
+        if (!e.Result)
         {
             FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
+            return;
         }
+        FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("ADD_WIN")));
+        Close();
     }
     private void GetResult(Obj sender, Events.GoodsEve.Update e)
     {
-        if (e.Result)
-        {
-            Close();
-        }else
+        if (!e.Result)
         {
             FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
+            return;
         }
+        FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("UPDATE_WIN")));
+        Close();
     }
     private void ResetBtnClick()
     {
@@ -133,7 +133,7 @@ public class GoodsInfoUI : UI
     private void RefreshData()
     {
         index_input.readOnly = true;
-        index_input.text = UpdateData.Id.ToString();
+        index_input.text = UpdateData.Id;
         name_input.text = UpdateData.Name;
         price_input.text = UpdateData.Price.ToString();
         stock_input.text = UpdateData.Stock.ToString();

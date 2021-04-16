@@ -105,7 +105,7 @@ def UpData(args):
     cursor = InitDB()
     print("修改数据:{0}".format(args))
     try:
-        num = cursor.execute("update %s set  %s = %s where  id = %s" % (args[0], args[1], args[2], args[3]))
+        num = cursor.execute("update %s set %s = '%s' where id = '%s'" % (args[0], args[1], args[2], args[3]))
         print("修改后受影响的行数为：", num)
         CommitDB()
         return True, None
@@ -120,7 +120,7 @@ def DeleteData(args):
     cursor = InitDB()
     print("删除数据:{0}".format(args))
     try:
-        num = cursor.execute("delete from %s where %s = %s" % (args[0], args[1], args[2]))
+        num = cursor.execute("delete from %s where %s = '%s'" % (args[0], args[1], args[2]))
         CommitDB()
         return num > 0, None
     except Exception as e:
@@ -136,7 +136,7 @@ def FindData(args):
     if type(args) is str:
         cursor.execute("select * from %s" % args)
     else:
-        cursor.execute("select * from %s where %s = %s" % (args[0], args[1], args[2]))
+        cursor.execute("select * from %s where %s = '%s'" % (args[0], args[1], args[2]))
     return cursor
 
 # cursor.executemany(sql, list1, list2)   一次操作多条数据

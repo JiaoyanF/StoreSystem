@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Def;
 using LitJson;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 /// <summary>
 /// 工具类
@@ -133,29 +134,51 @@ public class Tool
         // }
         return members;
     }
-
     /// <summary>
-    /// DateTime时间格式转换为Unix时间戳格式
+    /// 日期转换
     /// </summary>
-    /// <param name="time">时间</param>
-    /// <returns>double</returns>
-    private static double ConvertDateTimeInt(DateTime time)
+    /// <param name="year"></param>
+    /// <param name="month"></param>
+    /// <param name="day"></param>
+    /// <returns></returns>
+    public static string DateTimeChange(string year, string month, string day)
     {
-        DateTime dd = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-        TimeSpan ts = (time - dd);
-        return (Int64)ts.TotalMilliseconds;
+        return year + "," + month + "," + day;
     }
-    /// <summary>        
-    /// 时间戳转为C#格式时间        
-    /// </summary>        
-    /// <param name="timeStamp"></param>        
-    /// <returns></returns>        
-    public static DateTime ConvertStringToDateTime(string timeStamp)
+    public static string[] DateTimeChange(string str)
     {
-        DateTime dtStart = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), TimeZoneInfo.Local);
-        long lTime = long.Parse(timeStamp + "0000");
-        TimeSpan toNow = new TimeSpan(lTime);
-        return dtStart.Add(toNow);
+        str = str.Replace("\"", "");
+        return Regex.Split(str, ",");
+    }
+    /// <summary>
+    /// 转日期格式
+    /// </summary>
+    /// <param name="birth"></param>
+    /// <returns></returns>
+    public static string DateTimeFormat(string str)
+    {
+        if (str == string.Empty)
+            return "无";
+        string[] strs = DateTimeChange(str);
+        if (strs.Length != 3)
+            return "0000-00-00";
+        return strs[0] + "-" + strs[1] + "-" + strs[2];
+    }
+    /// <summary>
+    /// 获取性别名称
+    /// </summary>
+    /// <returns></returns>
+    public static string GetGenderName(int type)
+    {
+        return Def.GenderType.Convert(type);
+    }
+    /// <summary>
+    /// 获取权限名称
+    /// </summary>
+    /// <returns></returns>
+    public static string GetPowerName(int type)
+    {
+        return Def.PowerType.Convert(type);
     }
 }
 

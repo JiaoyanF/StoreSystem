@@ -139,6 +139,7 @@ public abstract class UI : MonoBehaviour, IDisposable
     }
     public void SetActive<T>(T obj, bool active) where T : Component
     {
+        if (obj == null && obj.gameObject == null) return;
         obj.gameObject.SetActive(active);
     }
     public void SetActive(GameObject obj, bool active)

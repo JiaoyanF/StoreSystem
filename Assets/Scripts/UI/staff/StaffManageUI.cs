@@ -9,78 +9,68 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 
 /// <summary>
-/// 商品管理
+/// 员工管理
 /// </summary> 
-public class GoodsManageUI : UI
+public class StaffManageUI : UI
 {
     public override UILayer Layer { get { return UILayer.Normal; } }
     private Dropdown Screen;// 筛选项
     private InputField Search;// 搜索框
-    private GameObject AddBtn;// 添加
-    private GameObject ModBtn;// 修改
-    private GameObject DelBtn;// 删除
-    private GameObject Title;// 列表标题
     private GameObject List;// 列表
-    private GoodsItem Item;// 商品项原型
-    List<GoodsItem> GoodsList = new List<GoodsItem>();
-    GoodsItem CurrItem;// 当前选中商品项
+    private StaffItem Item;// 原型
+    List<StaffItem> StaffList = new List<StaffItem>();
+    StaffItem CurrItem;// 当前选中商品项
     protected override void Initialize()
     {
         Screen = GetControl<Dropdown>(this, "Screen");
         Search = GetControl<InputField>(this, "Search");
-        AddBtn = Get(this, "Add");
-        ModBtn = Get(this, "Modify");
-        DelBtn = Get(this, "Delete");
-        Title = Get(this, "Title");
         List = Get(this, "List");
-        Item = NewElement<GoodsItem>(this, Get(List, "GoodsItem"));
+        Item = NewElement<StaffItem>(this, Get(List, "StaffItem"));
     }
     protected override void RegEvents()
     {
-        // Search.onEndEdit.AddListener(ScreenShow);
         Screen.onValueChanged.AddListener(ScreenShow);// 值改变事件
         Search.onValueChanged.AddListener(ScreenShow);// 值改变事件
-        
-        SetBtnEvent(AddBtn, ClickAddBtn);
-        SetBtnEvent(ModBtn, ClickModBtn);
-        SetBtnEvent(DelBtn, ClickDelBtn);
-        RegEventHandler<Events.GoodsEve.Get>(RefreshData);
-        RegEventHandler<Events.GoodsEve.Add>(AddData);
-        RegEventHandler<Events.GoodsEve.Update>(UpdateData);
-        RegEventHandler<Events.GoodsEve.Delete>(DeleteData);
+
+        SetBtnEvent(Get(this, "Add"), ClickAddBtn);
+        SetBtnEvent(Get(this, "Modify"), ClickModBtn);
+        SetBtnEvent(Get(this, "Delete"), ClickDelBtn);
+        RegEventHandler<Events.User.Get>(RefreshData);
+        RegEventHandler<Events.User.Add>(AddData);
+        RegEventHandler<Events.User.Update>(UpdateData);
+        RegEventHandler<Events.User.Delete>(DeleteData);
     }
     public void ClickAddBtn()
     {
-        FireEvent(new Events.UI.OpenUI("GoodsInfo"));
+        FireEvent(new Events.UI.OpenUI("StaffInfo"));
     }
     public void ClickModBtn()
     {
         if (CurrItem == null)
         {
-            FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("UNCHECKED_GOODS")));
+            FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("UNCHECKED_STAFF")));
             return;
         }
-        FireEvent(new Events.UI.OpenUI("GoodsInfo", CurrItem.data));
+        FireEvent(new Events.UI.OpenUI("StaffInfo", CurrItem.data));
     }
     public void ClickDelBtn()
     {
         if (CurrItem == null)
         {
-            FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("UNCHECKED_GOODS")));
+            FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("UNCHECKED_STAFF")));
             return;
         }
         Map<string, Action> btns = new Map<string, Action>();
-        btns.Add("确认", delegate () { NetMgr.SendMessage(NetTag.Goods.DeleteGoods, CurrItem.data.Id); });
+        btns.Add("确认", delegate () { NetMgr.SendMessage(NetTag.Staff.DeleteStaff, CurrItem.data.Id); });
         btns.Add("取消", null);
-        FireEvent(new Events.UI.OpenUI("CommonPanel", Localization.Format("DELETEGOODS_SURE_TIPS", CurrItem.data.Name), btns));
+        FireEvent(new Events.UI.OpenUI("CommonPanel", Localization.Format("DELETESTAFF_SURE_TIPS", CurrItem.data.Name), btns));
     }
     // 筛选显示
     void ScreenShow<T>(T args)
     {
-        // args.GetType() == typeof(string)
         int select_index = Screen.value;
         string input_key = Search.text;
-        foreach (GoodsItem item in GoodsList)
+        foreach (StaffItem item in StaffList)
         {
             string compare = string.Empty;
             switch (select_index)
@@ -89,130 +79,128 @@ public class GoodsManageUI : UI
                     compare = item.data.Id;
                     break;
                 case 2:
-                    compare = item.data.GetTypeName();
-                    break;
-                case 3:
                     compare = item.data.Name;
                     break;
+                case 3:
+                    compare = Tool.GetPowerName(item.data.Power);
+                    break;
                 default:
-                    compare = item.data.Id + "#" + item.data.GetTypeName() + "#" + item.data.Name;
+                    compare = item.data.Id + "#" + Tool.GetPowerName(item.data.Power) + "#" + item.data.Name;
                     break;
             }
             if (compare.Contains(input_key) || input_key == string.Empty)
             {
                 SetActive(item, true);
-            }else
+            }
+            else
             {
                 SetActive(item, false);
             }
         }
     }
     /// <summary>
-    /// 刷新商品列表
+    /// 刷新员工列表
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    void RefreshData(Obj sender, Events.GoodsEve.Get e)
+    void RefreshData(Obj sender, Events.User.Get e)
     {
         if (!e.Result)
         {
             FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
             return;
         }
-        CloneGoodsItem(e.Data);
+        CloneStaffItem(e.Data);
         Screen.value = 0;
         Search.text = string.Empty;
     }
     /// <summary>
-    /// 添加商品
+    /// 添加员工
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    void AddData(Obj sender, Events.GoodsEve.Add e)
+    void AddData(Obj sender, Events.User.Add e)
     {
         if (!e.Result)
         {
             FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
             return;
         }
-        GoodsItem new_item = Item.Clone<GoodsItem>();
-        new_item.RefreshData(e.NewGoods);
-        new_item.SetInfoListShow();
+        StaffItem new_item = Item.Clone<StaffItem>();
+        new_item.RefreshData(e.NewStaff);
         new_item.ClickFunc = ClickFunc;
-        for (int i = 0; i < GoodsList.Count; i++)
+        for (int i = 0; i < StaffList.Count; i++)
         {
-            if (i + 1 < GoodsList.Count && int.Parse(GoodsList[i + 1].data.Id) > int.Parse(e.NewGoods.Id))
+            if (i + 1 < StaffList.Count && int.Parse(StaffList[i + 1].data.Id) > int.Parse(e.NewStaff.Id))
             {
-                new_item.transform.SetSiblingIndex(i + 2);// 位置索引+2是因为还有一个"初号机"的位置要算上_(:3」∠)_
-                GoodsList.Insert(i, new_item);
+                new_item.transform.SetSiblingIndex(i + 2);
+                StaffList.Insert(i, new_item);
                 break;
             }
         }
     }
     /// <summary>
-    /// 修改商品信息
+    /// 修改员工
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    void UpdateData(Obj sender, Events.GoodsEve.Update e)
+    void UpdateData(Obj sender, Events.User.Update e)
     {
         if (!e.Result)
         {
             FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
             return;
         }
-        foreach (var item in GoodsList)
+        foreach (var item in StaffList)
         {
-            if (item.data.Id == e.NewGoods.Id)
+            if (item.data.Id == e.Data.Id)
             {
-                item.RefreshData(e.NewGoods);
+                item.RefreshData(e.Data);
                 break;
             }
         }
     }
     /// <summary>
-    /// 删除商品
+    /// 删除员工
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    void DeleteData(Obj sender, Events.GoodsEve.Delete e)
+    void DeleteData(Obj sender, Events.User.Delete e)
     {
         if (!e.Result)
         {
             FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
             return;
         }
-        for (int i = 0; i < GoodsList.Count; i++)
+        for (int i = 0; i < StaffList.Count; i++)
         {
-            if (GoodsList[i].data.Id == e.Id)
+            if (StaffList[i].data.Id == e.Id)
             {
-                GoodsList[i].Dispose();
-                GoodsList.RemoveAt(i);
+                StaffList[i].Dispose();
+                StaffList.RemoveAt(i);
                 break;
             }
         }
-        FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("DELETE_WIN")));
+        FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("STAFF_DELETE_WIN")));
     }
-    // 克隆商品项们
-    private void CloneGoodsItem(List<Goods> data)
+    // 克隆员工项们
+    private void CloneStaffItem(List<Staff> data)
     {
-        GoodsList = Item.Clone<GoodsItem>(GoodsList, data.Count);
+        StaffList = Item.Clone<StaffItem>(StaffList, data.Count);
         int index = 0;
-        foreach (Goods item in data)
+        foreach (Staff item in data)
         {
-            GoodsList[index].RefreshData(item);
-            GoodsList[index].SetInfoListShow();
-            GoodsList[index].ClickFunc = ClickFunc;
-            // Log.Debug("{0}顺序:{1}",GoodsList[index].name,GoodsList[index].transform.GetSiblingIndex());
+            StaffList[index].RefreshData(item);
+            StaffList[index].ClickFunc = ClickFunc;
             index++;
         }
-        Log.Debug("商品个数：{0}", GoodsList.Count);
+        Log.Debug("员工个数：{0}", StaffList.Count);
     }
     /// <summary>
-    /// 商品项点击事件
+    /// 员工项点击事件
     /// </summary>
     /// <param name="item"></param>
-    private void ClickFunc(GoodsItem item)
+    private void ClickFunc(StaffItem item)
     {
         if (CurrItem != null)
         {
@@ -230,7 +218,7 @@ public class GoodsManageUI : UI
     }
     protected override void OnEnable()
     {
-        NetMgr.SendMessage(NetTag.Goods.GetData);
+        NetMgr.SendMessage(NetTag.Staff.GetData);
     }
     protected override void OnUpdate()
     {

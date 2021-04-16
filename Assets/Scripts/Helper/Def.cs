@@ -58,8 +58,8 @@ namespace Def
         Staff,
         Vip,
         SalesRecord,
-        StaffModRecord,
-        VipModRecord,
+        StaffRecord,
+        VipRecord,
     }
 
     #endregion
@@ -69,10 +69,34 @@ namespace Def
     /// <summary>
     /// 性别
     /// </summary> 
-    public enum Gender
+    public class GenderType
     {
-        Man,// 男
-        Woman,// 女
+        public const string Man = "男";
+        public const string Woman = "女";
+        public static string Convert(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return Man;
+                case 1:
+                    return Woman;
+                default:
+                    return string.Empty;
+            }
+        }
+        public static int Convert(string name)
+        {
+            switch (name)
+            {
+                case Man:
+                    return 0;
+                case Woman:
+                    return 1;
+                default:
+                    return 0;
+            }
+        }
     }
 
     /// <summary>
@@ -113,7 +137,7 @@ namespace Def
                 case Commodity:
                     return 3;
                 default:
-                    return -1;
+                    return 0;
             }
         }
     }
@@ -131,21 +155,34 @@ namespace Def
     /// <summary>
     /// 员工权限
     /// </summary>
-    public enum PowerType
+    public class PowerType
     {
-        Admin,// 管理员
-        Ordinary,// 普通员工
-        Temporary,// 临时工
-    }
-
-    /// <summary>
-    /// 员工岗位
-    /// </summary>
-    public enum PostType
-    {
-        Cashier,// 收银员
-        Tally,// 理货员
-        Storage,// 仓库管理员
+        public const string Formal = "正式工";
+        public const string Admin = "管理员";
+        public static string Convert(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return Formal;
+                case 1:
+                    return Admin;
+                default:
+                    return string.Empty;
+            }
+        }
+        public static int Convert(string name)
+        {
+            switch (name)
+            {
+                case Formal:
+                    return 0;
+                case Admin:
+                    return 1;
+                default:
+                    return 0;
+            }
+        }
     }
 
     /// <summary>
@@ -155,11 +192,6 @@ namespace Def
     {
         Vip,// 会员
         Other,// 普通
-    }
-
-    public enum Receipt
-    {
-
     }
 
     #endregion

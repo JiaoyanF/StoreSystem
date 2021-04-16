@@ -50,7 +50,7 @@ public class SettleAccountsUI : UI
     }
     protected override void RegEvents()
     {
-        VipInput.onValueChanged.AddListener(VipChange);// 值改变事件
+        VipInput.onEndEdit.AddListener(VipChange);// 值改变事件
         SetBtnEvent(Get(Btns, "Add"), ClickAddBtn);
         SetBtnEvent(Get(Btns, "Delete"), ClickDeleteBtn);
         SetBtnEvent(Get(Btns, "Settlement"), ClickSettlementBtn);
@@ -229,23 +229,39 @@ public class SettleAccountsUI : UI
         tot_num.text = Localization.Format("GOODS_NUM_TITLE", GoodsList.Count.ToString());
         tot_money.text = Localization.Format("GOODS_MONEY_TITLE", money.ToString());
     }
+    /// <summary>
+    /// 结账成功
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void SettlementResult(Obj sender, Events.GoodsEve.Settlement e)
     {
-        if (e.Result)
-        {
-            foreach (var item in GoodsList)
-            {
-                item.Dispose();
-            }
-            GoodsList.Clear();
-        }
-        else
+        if (!e.Result)
         {
             FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
             return;
         }
+        foreach (var item in GoodsList)
+        {
+            item.Dispose();
+        }
+        GoodsList.Clear();
+        InitInput();
+        FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("SETTLE_WIN")));
     }
-    protected override void OnEnable() { }
+    /// <summary>
+    /// 初始化输入框
+    /// </summary>
+    private void InitInput()
+    {
+        VipInput.text = string.Empty;
+        IdInput.text = string.Empty;
+        NumInput.text = "1";
+    }
+    protected override void OnEnable()
+    {
+        InitInput();
+    }
     protected override void OnUpdate() { }
     protected override void OnDisable() { }
     protected override void OnDestroy() { }

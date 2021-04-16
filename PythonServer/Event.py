@@ -26,6 +26,13 @@ def InitEvent():
     RegEvent("goods:add_shop", Running.AddShop)
     RegEvent("goods:settle", Running.Settle)
     RegEvent("vip:data", Running.GetVipData)
+    RegEvent("vip:add", Running.AddVip)
+    RegEvent("vip:update", Running.UpdateVip)
+    RegEvent("vip:delete", Running.DeleteVip)
+    RegEvent("staff:data", Running.GetStaffData)
+    RegEvent("staff:add", Running.AddStaff)
+    RegEvent("staff:update", Running.UpdateStaff)
+    RegEvent("staff:delete", Running.DeleteStaff)
     RegEvent("sales:record", Running.GetSalesRecord)
 
 
@@ -33,7 +40,7 @@ def InitEvent():
 def FireEvent(tag, *args, **kwargs):
     if Events.get(tag) is None:
         return
-    print('事件参数类型：{0},事件参数:{1}'.format(type(args), args))
+    # print('事件参数类型：{0},事件参数:{1}'.format(type(args), args))
     if isinstance(args, tuple):
         if len(args) == 0:
             args = None

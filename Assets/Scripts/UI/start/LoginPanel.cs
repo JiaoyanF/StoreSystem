@@ -81,7 +81,7 @@ public class LoginPanel : UIElement
     private void ResetData()
     {
         un_input.text = "1998";
-        ps_input.text = "522";
+        ps_input.text = "0522";
     }
     private void MaskClick()
     {

@@ -52,12 +52,12 @@ public class MainFormUI : UI
         GameObject VipCon = Get(VipMan, "Context");
         SetBtnEvent(VipMan, delegate () { SetActive(VipCon, true); });
         Get(VipMan, "vipadd_item").GetComponent<PointerEx>().SetEvent(AddVip, VipCon);// 加入会员
-        Get(VipMan, "vipinfo_item").GetComponent<PointerEx>().SetEvent(VipInfo, VipCon);// 会员信息
+        Get(VipMan, "vipinfo_item").GetComponent<PointerEx>().SetEvent(VipManage, VipCon);// 会员信息
         // 员工管理子菜单
         GameObject StaffCon = Get(StaffMan, "Context");
         SetBtnEvent(StaffMan, delegate () { SetActive(StaffCon, true); });
         Get(StaffMan, "staffadd_item").GetComponent<PointerEx>().SetEvent(AddStaff, StaffCon);// 入职
-        Get(StaffMan, "staffinfo_item").GetComponent<PointerEx>().SetEvent(StaffInfo, StaffCon);// 员工信息
+        Get(StaffMan, "staffinfo_item").GetComponent<PointerEx>().SetEvent(StaffManage, StaffCon);// 员工信息
         // 关于子菜单
         GameObject AboutCon = Get(About, "Context");
         SetBtnEvent(About, delegate () { SetActive(AboutCon, true); });
@@ -89,18 +89,22 @@ public class MainFormUI : UI
     void AddVip()
     {
         Log.Debug("加入会员");
+        FireEvent(new Events.UI.OpenUI("VipInfo"));
     }
-    void VipInfo()
+    void VipManage()
     {
         Log.Debug("会员信息");
+        FireEvent(new Events.UI.OpenUI("VipManage"));
     }
     void AddStaff()
     {
         Log.Debug("入职");
+        FireEvent(new Events.UI.OpenUI("StaffInfo"));
     }
-    void StaffInfo()
+    void StaffManage()
     {
         Log.Debug("员工信息");
+        FireEvent(new Events.UI.OpenUI("StaffManage"));
     }
     void AboutShow()
     {

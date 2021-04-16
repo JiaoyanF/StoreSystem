@@ -28,7 +28,7 @@ public class Goods : BaseData
         string[] strs = Regex.Split(data, ",");
         if (strs.Length != 4)
             return;
-        this.Id = int.Parse(strs[0]);
+        this.Id = strs[0];
         this.Num = int.Parse(strs[1]);
         this.Price = double.Parse(strs[2]);
         this.Name = strs[3];
@@ -36,7 +36,7 @@ public class Goods : BaseData
     public Goods(JsonData json)
     {
         this.Tag = Convert.ToInt32(Def.DataList.Goods);
-        this.Id = json["id"] != null ? Convert.ToInt32(json["id"].ToString()) : 0;
+        this.Id = json["id"] != null ? json["id"].ToString() : string.Empty;
         this.Name = json["name"] != null ? json["name"].ToString() : string.Empty;
         this.Price = json["price"] != null ? double.Parse(json["price"].ToString()) : 0;
         this.Stock = json["type"] != null ? Convert.ToInt32(json["stock"].ToString()) : 0;

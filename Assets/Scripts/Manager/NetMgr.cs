@@ -174,9 +174,12 @@ public struct NetTag
     {
         public const string DeleteData = "data:delete";// 删除数据
     }
-    public struct User
+    public struct Staff
     {
-        public const string GetData = "user:data";// 请求、响应：用户数据
+        public const string GetData = "staff:data";// 员工数据
+        public const string AddStaff = "staff:add";// 添加员工
+        public const string UpdateStaff = "staff:update";// 修改员工信息
+        public const string DeleteStaff = "staff:delete";// 删除员工
     }
     public struct Goods
     {
@@ -190,6 +193,9 @@ public struct NetTag
     public struct Vip
     {
         public const string GetData = "vip:data";// 请求、响应：会员数据
+        public const string AddVip = "vip:add";// 添加会员
+        public const string UpdateVip = "vip:update";// 修改会员信息
+        public const string DeleteVip = "vip:delete";// 删除会员
     }
     public struct SalesRecord
     {

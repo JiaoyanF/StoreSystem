@@ -277,18 +277,18 @@ public static class Events
         public struct Delete : Event
         {
             public bool Result;
-            public int Id;
+            public string Id;
             public string Reason;
             public Delete(int id)
             {
                 this.Result = true;
-                this.Id = id;
+                this.Id = id.ToString();
                 this.Reason = null;
             }
             public Delete(string reason)
             {
                 this.Result = false;
-                this.Id = -1;
+                this.Id = null;
                 this.Reason = reason;
             }
         }
@@ -338,6 +338,9 @@ public static class Events
             }
         }
     }
+    /// <summary>
+    /// 会员相关事件
+    /// </summary>
     public struct Vip
     {
         public struct Get : Event
@@ -360,6 +363,155 @@ public static class Events
             {
                 this.Result = false;
                 this.Data = null;
+                this.Reason = reason;
+            }
+        }
+        public struct Add : Event
+        {
+            public bool Result;
+            public Member NewVip;
+            public string Reason;
+            public Add(JsonData json)
+            {
+                this.Result = true;
+                this.NewVip = new Member(json);
+                this.Reason = null;
+            }
+            public Add(string reason)
+            {
+                this.Result = false;
+                this.NewVip = null;
+                this.Reason = reason;
+            }
+        }
+        /// <summary>
+        /// 修改
+        /// </summary>
+        public struct Update : Event
+        {
+            public bool Result;
+            public Member Data;
+            public string Reason;
+            public Update(JsonData json)
+            {
+                this.Result = true;
+                this.Data = new Member(json);
+                this.Reason = null;
+            }
+            public Update(string reason)
+            {
+                this.Result = false;
+                this.Data = null;
+                this.Reason = reason;
+            }
+        }
+        /// <summary>
+        /// 删除
+        /// </summary>
+        public struct Delete : Event
+        {
+            public bool Result;
+            public string Id;
+            public string Reason;
+            public Delete(int id)
+            {
+                this.Result = true;
+                this.Id = id.ToString();
+                this.Reason = null;
+            }
+            public Delete(string reason)
+            {
+                this.Result = false;
+                this.Id = null;
+                this.Reason = reason;
+            }
+        }
+    }
+    /// <summary>
+    /// 员工相关事件
+    /// </summary>
+    public struct User
+    {
+        public struct Get : Event
+        {
+            public bool Result;
+            public List<Staff> Data;
+            public string Reason;
+            public Get(JsonData json)
+            {
+                this.Result = true;
+                List<Staff> list = new List<Staff>();
+                foreach (JsonData item in json)
+                {
+                    list.Add(new Staff(item));
+                }
+                this.Data = list;
+                this.Reason = null;
+            }
+            public Get(string reason)
+            {
+                this.Result = false;
+                this.Data = null;
+                this.Reason = reason;
+            }
+        }
+        public struct Add : Event
+        {
+            public bool Result;
+            public Staff NewStaff;
+            public string Reason;
+            public Add(JsonData json)
+            {
+                this.Result = true;
+                this.NewStaff = new Staff(json);
+                this.Reason = null;
+            }
+            public Add(string reason)
+            {
+                this.Result = false;
+                this.NewStaff = null;
+                this.Reason = reason;
+            }
+        }
+        /// <summary>
+        /// 修改
+        /// </summary>
+        public struct Update : Event
+        {
+            public bool Result;
+            public Staff Data;
+            public string Reason;
+            public Update(JsonData json)
+            {
+                this.Result = true;
+                this.Data = new Staff(json);
+                this.Reason = null;
+            }
+            public Update(string reason)
+            {
+                this.Result = false;
+                this.Data = null;
+                this.Reason = reason;
+            }
+        }
+        /// <summary>
+        /// 删除
+        /// </summary>
+        public struct Delete : Event
+        {
+            public bool Result;
+            public string Id;
+            public string Reason;
+            public Delete(int id)
+            {
+                this.Result = true;
+                this.Id = id.ToString();
+                this.Reason = null;
+            }
+            public Delete(string reason)
+            {
+                this.Result = false;
+                this.Id = null;
                 this.Reason = reason;
             }
         }

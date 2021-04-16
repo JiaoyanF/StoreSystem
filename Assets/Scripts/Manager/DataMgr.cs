@@ -26,6 +26,16 @@ public class DataMgr : Obj
         NetMgr.RegEvent(NetTag.Goods.DeleteGoods, GoodsResult);
         NetMgr.RegEvent(NetTag.Goods.AddShoping, GoodsResult);
         NetMgr.RegEvent(NetTag.Goods.Settlement, GoodsResult);
+        // 会员相关
+        NetMgr.RegEvent(NetTag.Vip.GetData, VipResult);
+        NetMgr.RegEvent(NetTag.Vip.AddVip, VipResult);
+        NetMgr.RegEvent(NetTag.Vip.UpdateVip, VipResult);
+        NetMgr.RegEvent(NetTag.Vip.DeleteVip, VipResult);
+        // 员工相关
+        NetMgr.RegEvent(NetTag.Staff.GetData, StaffResult);
+        NetMgr.RegEvent(NetTag.Staff.AddStaff, StaffResult);
+        NetMgr.RegEvent(NetTag.Staff.UpdateStaff, StaffResult);
+        NetMgr.RegEvent(NetTag.Staff.DeleteStaff, StaffResult);
         // 销售清单
         NetMgr.RegEvent(NetTag.SalesRecord.GetRecord, SalesRecord);
     }
@@ -97,7 +107,94 @@ public class DataMgr : Obj
                 break;
         }
     }
-
+    /// <summary>
+    /// 会员数据
+    /// </summary>
+    /// <param name="con"></param>
+    private void VipResult(JsonData con)
+    {
+        if (!Tool.ContainsKey(con, "result") || !Tool.ContainsKey(con, "type"))
+        {
+            Log.Debug("缺少返回结果或操作类型：{0}", con.ToJson());
+            return;
+        }
+        switch (con["type"].ToString())
+        {
+            case "get":
+                if (Convert.ToBoolean(con["result"].ToString()))
+                    FireEvent(new Events.Vip.Get(con["data"]));
+                else
+                    FireEvent(new Events.Vip.Get(con["reason"].ToString()));
+                break;
+            case "add":
+                if (Convert.ToBoolean(con["result"].ToString()))
+                    FireEvent(new Events.Vip.Add(con["data"]));
+                else
+                    FireEvent(new Events.Vip.Add(con["reason"].ToString()));
+                break;
+            case "update":
+                if (Convert.ToBoolean(con["result"].ToString()))
+                    FireEvent(new Events.Vip.Update(con["data"]));
+                else
+                    FireEvent(new Events.Vip.Update(con["reason"].ToString()));
+                break;
+            case "delete":
+                if (Convert.ToBoolean(con["result"].ToString()))
+                    FireEvent(new Events.Vip.Delete(Convert.ToInt32(con["id"].ToString())));
+                else
+                    FireEvent(new Events.Vip.Delete(con["reason"].ToString()));
+                break;
+            default:
+                Log.Debug("操作类型有误：{0}", con["type"]);
+                break;
+        }
+    }
+    /// <summary>
+    /// 员工数据
+    /// </summary>
+    /// <param name="con"></param>
+    private void StaffResult(JsonData con)
+    {
+        if (!Tool.ContainsKey(con, "result") || !Tool.ContainsKey(con, "type"))
+        {
+            Log.Debug("缺少返回结果或操作类型：{0}", con.ToJson());
+            return;
+        }
+        switch (con["type"].ToString())
+        {
+            case "get":
+                if (Convert.ToBoolean(con["result"].ToString()))
+                    FireEvent(new Events.User.Get(con["data"]));
+                else
+                    FireEvent(new Events.User.Get(con["reason"].ToString()));
+                break;
+            case "add":
+                if (Convert.ToBoolean(con["result"].ToString()))
+                    FireEvent(new Events.User.Add(con["data"]));
+                else
+                    FireEvent(new Events.User.Add(con["reason"].ToString()));
+                break;
+            case "update":
+                if (Convert.ToBoolean(con["result"].ToString()))
+                    FireEvent(new Events.User.Update(con["data"]));
+                else
+                    FireEvent(new Events.User.Update(con["reason"].ToString()));
+                break;
+            case "delete":
+                if (Convert.ToBoolean(con["result"].ToString()))
+                    FireEvent(new Events.User.Delete(Convert.ToInt32(con["id"].ToString())));
+                else
+                    FireEvent(new Events.User.Delete(con["reason"].ToString()));
+                break;
+            default:
+                Log.Debug("操作类型有误：{0}", con["type"]);
+                break;
+        }
+    }
+    /// <summary>
+    /// 销售清单数据
+    /// </summary>
+    /// <param name="con"></param>
     private void SalesRecord(JsonData con)
     {
         if (Convert.ToBoolean(con["result"].ToString()))

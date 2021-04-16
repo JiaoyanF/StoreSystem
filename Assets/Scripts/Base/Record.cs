@@ -12,8 +12,8 @@ using System.Text.RegularExpressions;
 public class Record : BaseData
 {
     public double Money;
-    public int Staff;
-    public int Vip;
+    public string Staff;
+    public string Vip;
     public List<Goods> SalesList;// 销售清单
     public Record() { }
     public Record(JsonData json)
@@ -34,11 +34,11 @@ public class Record : BaseData
             SalesList.Add(new Goods(item));
         }
         this.Tag = Convert.ToInt32(Def.DataList.SalesRecord);
-        this.Id = json["id"] != null ? Convert.ToInt32(json["id"].ToString()) : -1;
+        this.Id = json["id"] != null ? json["id"].ToString() : string.Empty;
         this.Time = json["time"] != null ? json["time"].ToString() : string.Empty;
         this.Money = json["money"] != null ? double.Parse(json["money"].ToString()) : -1f;
-        this.Staff = json["staff"] != null ? Convert.ToInt32(json["staff"].ToString()) : -1;
-        this.Vip = json["vip"] != null ? Convert.ToInt32(json["vip"].ToString()) : -1;
+        this.Staff = json["staff"] != null ? json["staff"].ToString() : string.Empty;
+        this.Vip = json["vip"] != null ? json["vip"].ToString() : string.Empty;
     }
 }
 
@@ -90,8 +90,7 @@ public class RecordItem : UIElement
         this.gameObject.name = data.Id.ToString();
         index.text = data.Id.ToString();
         // 时间戳转日期
-        DateTime dt = Tool.ConvertStringToDateTime(data.Time);
-        time.text = dt.ToString("yyyy/MM/dd HH:mm:ss:ffff");
+        time.text = Tool.DateTimeFormat(data.Time);
         goods.text = data.SalesList[0].Name + "...";
         money.text = data.Money.ToString();
         vip.text = data.Vip.ToString();

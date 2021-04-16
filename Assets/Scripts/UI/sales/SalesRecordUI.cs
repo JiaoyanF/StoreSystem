@@ -47,9 +47,9 @@ public class SalesRecordUI : UI
             FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
             return;
         }
-        CloneGoodsItem(e.Data);
+        ClonRecordItem(e.Data);
     }
-    private void CloneGoodsItem(List<Record> data)
+    private void ClonRecordItem(List<Record> data)
     {
         RecordList = Item.Clone<RecordItem>(RecordList, data.Count);
         int index = 0;
