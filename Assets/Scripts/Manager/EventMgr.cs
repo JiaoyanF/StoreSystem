@@ -543,6 +543,27 @@ public static class Events
                 this.Reason = reason;
             }
         }
+        /// <summary>
+        /// 退货
+        /// </summary>
+        public struct Returns : Event
+        {
+            public bool Result;
+            public Record Data;
+            public string Reason;
+            public Returns(JsonData json)
+            {
+                this.Result = true;
+                this.Reason = null;
+                this.Data = new Record(json);
+            }
+            public Returns(string reason)
+            {
+                this.Result = false;
+                this.Data = null;
+                this.Reason = reason;
+            }
+        }
     }
     /// <summary>
     /// 网络事件

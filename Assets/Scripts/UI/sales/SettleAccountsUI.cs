@@ -103,10 +103,10 @@ public class SettleAccountsUI : UI
         JsonData data = new JsonData();
         data["id"] = IdInput.text;
         data["num"] = NumInput.text;
-        NetMgr.SendMessage(NetTag.Goods.AddShoping, data);
+        NetMgr.SendMessage(NetTag.Goods.AddShoping, data);// 发送网络消息获取该商品信息
     }
     /// <summary>
-    /// 移除商品
+    /// 购买列表移除商品
     /// </summary>
     private void ClickDeleteBtn()
     {

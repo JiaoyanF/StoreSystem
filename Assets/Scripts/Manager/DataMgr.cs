@@ -38,6 +38,7 @@ public class DataMgr : Obj
         NetMgr.RegEvent(NetTag.Staff.DeleteStaff, StaffResult);
         // 销售清单
         NetMgr.RegEvent(NetTag.SalesRecord.GetRecord, SalesRecord);
+        NetMgr.RegEvent(NetTag.SalesRecord.Returns, SalesRecord);
     }
     /// <summary>
     /// 登录数据
@@ -197,9 +198,29 @@ public class DataMgr : Obj
     /// <param name="con"></param>
     private void SalesRecord(JsonData con)
     {
-        if (Convert.ToBoolean(con["result"].ToString()))
-            FireEvent(new Events.Sales.GetRecord(con["data"]));
-        else
-            FireEvent(new Events.Sales.GetRecord(con["reason"].ToString()));
+        if (!Tool.ContainsKey(con, "result") || !Tool.ContainsKey(con, "type"))
+        {
+            Log.Debug("缺少返回结果或操作类型：{0}", con.ToJson());
+            return;
+        }
+        switch (con["type"].ToString())
+        {
+            case "get":
+                if (Convert.ToBoolean(con["result"].ToString()))
+                    FireEvent(new Events.Sales.GetRecord(con["data"]));
+                else
+                    FireEvent(new Events.Sales.GetRecord(con["reason"].ToString()));
+                break;
+            case "returns":
+                if (Convert.ToBoolean(con["result"].ToString()))
+                    FireEvent(new Events.Sales.Returns(con["data"]));
+                else
+                    FireEvent(new Events.Sales.Returns(con["reason"].ToString()));
+                break;
+            default:
+                Log.Debug("操作类型有误：{0}", con["type"]);
+                break;
+        }
+        
     }
 }

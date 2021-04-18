@@ -39,7 +39,7 @@ public class UIMgr : Obj
         UICamera = Tool.FindChild<Camera>(Root.transform, "Camera");
         BG = Tool.FindChild<RawImage>(Root.transform, "BGImg");
 
-        FireEvent(new Events.UI.OpenUI("Start", Localization.Format("SYSTEM_NAME"), "111"));
+        FireEvent(new Events.UI.OpenUI("Start"));
     }
 
     public void ShowUI(UI ui)
@@ -49,6 +49,7 @@ public class UIMgr : Obj
         {
             for (uis.Begin(); uis.Next();)
             {
+                if (uis.Key == ui.Name) return;
                 if (uis.Value.Layer == UILayer.Normal)
                 {
                     uis.Value.Close();
@@ -60,6 +61,7 @@ public class UIMgr : Obj
         {
             for (uis.Begin(); uis.Next();)
             {
+                if (uis.Key == ui.Name) return;
                 if (uis.Value != null)
                 {
                     uis.Value.Close();

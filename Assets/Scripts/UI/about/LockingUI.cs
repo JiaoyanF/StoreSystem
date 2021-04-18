@@ -32,6 +32,11 @@ public class LockingUI : UI
     /// </summary>
     private void UnlockFunc()
     {
+        if (ps_input.text == string.Empty)
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("PASSWORD_NULL_TIPS")));
+            return;
+        }
         JsonData data = new JsonData();
         data["username"] = un_input.text;
         data["password"] = ps_input.text;

@@ -48,6 +48,8 @@ public class Record : BaseData
 public class RecordItem : UIElement
 {
     GameObject select;// 选中高亮
+    GameObject returns_line;// 已退货标识
+    GameObject returns_btn;// 退货按钮
     Text index;
     Text time;
     Text goods;
@@ -62,6 +64,8 @@ public class RecordItem : UIElement
     protected override void Initialize()
     {
         select = Root.Get(this, "select");
+        returns_line = Root.Get(this, "returns_line");
+        returns_btn = Root.Get(this, "returns_btn");
         index = Root.GetControl<Text>(this, "idx");
         time = Root.GetControl<Text>(this, "time");
         goods = Root.GetControl<Text>(this, "goods");
@@ -71,8 +75,9 @@ public class RecordItem : UIElement
     }
     protected override void RegEvents()
     {
-        Root.SetBtnEvent(this.gameObject, OnClick);
+        // Root.SetBtnEvent(this.gameObject, OnClick);
         Root.SetBtnEvent(goods.gameObject, MoreClick);
+        Root.SetBtnEvent(returns_btn, ReturnClick);
     }
     private void OnClick()
     {
@@ -83,6 +88,13 @@ public class RecordItem : UIElement
     {
         if (MoreClickFunc != null)
             MoreClickFunc(this.data);
+    }
+    /// <summary>
+    /// 退货:整个清单
+    /// </summary>
+    private void ReturnClick()
+    {
+        Root.NetMgr.SendMessage(NetTag.SalesRecord.Returns, data.Id);
     }
     public void RefreshData(Record data)
     {
@@ -95,6 +107,18 @@ public class RecordItem : UIElement
         money.text = data.Money.ToString();
         vip.text = data.Vip.ToString();
         staff.text = data.Staff.ToString();
+        // 退货状态相关
+        Root.SetActive(returns_line, true);
+        Root.SetActive(returns_btn, false);
+        foreach (Goods item in data.SalesList)
+        {
+            if (item.Returnsed == false)
+            {
+                Root.SetActive(returns_line, false);
+                Root.SetActive(returns_btn, true);
+                break;
+            }
+        }
     }
     /// <summary>
     /// 设置选中效果

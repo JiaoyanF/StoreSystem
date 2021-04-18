@@ -19,7 +19,6 @@ public class StartUI : UI
     private GameObject login_panel;// 登录面板
     private GameObject bg;// 背景
     private LoginPanel loginPanel;// 登录面板实例
-    private AboutPanel aboutPanel;// 关于面板实例
 
     protected override void Initialize()
     {
@@ -41,17 +40,11 @@ public class StartUI : UI
     }
     protected override void OnEnable()
     {
-        SetText<Text>(title, context[0].ToString());
+        SetText<Text>(title, Localization.Format("SYSTEM_NAME"));
     }
-    protected override void OnUpdate()
-    {
-    }
-    protected override void OnDisable()
-    {
-    }
-    protected override void OnDestroy()
-    {
-    }
+    protected override void OnUpdate() { }
+    protected override void OnDisable() { }
+    protected override void OnDestroy() { }
     /// <summary>
     /// 登录按钮点击
     /// </summary>
@@ -68,8 +61,9 @@ public class StartUI : UI
     /// </summary>
     private void AboutClick()
     {
-        ChangeBtnsShow();
-        print("显示关于面板");
+        // ChangeBtnsShow();
+        // print("显示关于面板");
+        FireEvent(new Events.UI.OpenUI("About"));
     }
     /// <summary>
     /// 退出按钮
@@ -85,9 +79,4 @@ public class StartUI : UI
     {
         center.SetActive(center.activeSelf == false);
     }
-}
-
-public class AboutPanel : UIElement
-{
-
 }

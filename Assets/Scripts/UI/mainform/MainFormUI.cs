@@ -109,6 +109,7 @@ public class MainFormUI : UI
     void AboutShow()
     {
         Log.Debug("关于显示");
+        FireEvent(new Events.UI.OpenUI("About"));
     }
     void LockingSystem()
     {
@@ -118,7 +119,9 @@ public class MainFormUI : UI
     void Logout()
     {
         Log.Debug("退出登录");
-        SceneManager.LoadScene("Launcher");
+        FireEvent(new Events.UI.OpenUI("Start"));
+        ui_mgr.Loom.LoginUser(null);
+        Close();
     }
     protected override void OnEnable()
     {

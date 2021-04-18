@@ -34,6 +34,7 @@ def InitEvent():
     RegEvent("staff:update", Running.UpdateStaff)
     RegEvent("staff:delete", Running.DeleteStaff)
     RegEvent("sales:record", Running.GetSalesRecord)
+    RegEvent("sales:returns", Running.Returns)
 
 
 # 触发事件

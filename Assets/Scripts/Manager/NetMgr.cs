@@ -200,5 +200,6 @@ public struct NetTag
     public struct SalesRecord
     {
         public const string GetRecord = "sales:record";// 销售数据
+        public const string Returns = "sales:returns";// 退货
     }
 }

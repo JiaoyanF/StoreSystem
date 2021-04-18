@@ -71,14 +71,6 @@ public class GoodsInfoUI : UI
         god.Stock = int.Parse(stock_input.text);
         god.Tips = desc_input.text;
         god.Type = type_drop.value;
-        // Log.Debug(JsonMapper.ToJson(god));
-        // JsonData data = new JsonData();
-        // data["id"] = index_input.text;
-        // data["name"] = name_input.text;
-        // data["price"] = price_input.text;
-        // data["stock"] = stock_input.text;
-        // data["desc"] = desc_input.text;
-        // data["type"] = type_drop.value;
         if (UpdateData != null)
         {
             NetMgr.SendMessage(NetTag.Goods.UpdateGoods, god);

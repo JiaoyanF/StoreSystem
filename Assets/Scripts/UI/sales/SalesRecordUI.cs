@@ -34,6 +34,7 @@ public class SalesRecordUI : UI
     protected override void RegEvents()
     {
         RegEventHandler<Events.Sales.GetRecord>(RefreshData);
+        RegEventHandler<Events.Sales.Returns>(ReturnResult);
     }
     /// <summary>
     /// 刷新数据
@@ -48,6 +49,28 @@ public class SalesRecordUI : UI
             return;
         }
         ClonRecordItem(e.Data);
+    }
+    /// <summary>
+    /// 退货成功刷新界面
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void ReturnResult(Obj sender, Events.Sales.Returns e)
+    {
+        if (!e.Result)
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", e.Reason));
+            return;
+        }
+        foreach (RecordItem item in RecordList)
+        {
+            if (item.data.Id == e.Data.Id)
+            {
+                item.RefreshData(e.Data);
+                break;
+            }
+        }
+        FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("RETURNS_WIN")));
     }
     private void ClonRecordItem(List<Record> data)
     {

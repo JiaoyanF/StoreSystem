@@ -16,6 +16,7 @@ public class Goods : BaseData
     public string Tips;// 描述
     public int Type;// 商品类型
     public int Num;// 购买数量
+    public bool Returnsed;// 已退货为true
     public double Subtotal { get; private set; }// 金额小计
     public Goods() { }
     /// <summary>
@@ -26,12 +27,13 @@ public class Goods : BaseData
     {
         data = data.Replace("\"", "");
         string[] strs = Regex.Split(data, ",");
-        if (strs.Length != 4)
+        if (strs.Length != 5)
             return;
         this.Id = strs[0];
         this.Num = int.Parse(strs[1]);
         this.Price = double.Parse(strs[2]);
         this.Name = strs[3];
+        this.Returnsed = strs[4] == "0" ? false : true;
     }
     public Goods(JsonData json)
     {

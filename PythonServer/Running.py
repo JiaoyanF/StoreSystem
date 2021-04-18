@@ -149,7 +149,7 @@ def Settle(target, data):
             result['reason'] = "购买列表中有商品库存不足!"
             break
         money = money + item['Num'] * item['Price']
-        arg = str(item['Id']) + "," + str(item['Num']) + "," + str(item['Price']) + "," + str(item['Name'])
+        arg = str(item['Id']) + "," + str(item['Num']) + "," + str(item['Price']) + "," + str(item['Name']) + "," + '0'
         record.append(arg)
         result['result'], result['reason'] = Event.FireEvent("UpData", "Goods", "stock", find['stock'] - item['Num'], str(item['Id']))
     record_str = ";".join(record)
@@ -237,6 +237,58 @@ def GetSalesRecord(target, args):
     else:
         result['reason'] = "销售记录为空"
     Event.FireEvent("SendMessage", "sales:record", result, tar=target)
+
+
+# 退货
+def Returns(target, args):
+    result = {'type': "returns", 'result': False}
+    record_id = 0
+    item_id = 0
+    if isinstance(args, tuple):
+        record_id = args[0]
+        item_id = args[1]
+    else:
+        record_id = args
+    print("退货数据:{0}".format(args))
+    now_data = GetData("SalesRecord", record_id).fetchall()[0]
+    print("原数据:{0}".format(now_data))
+    goods_list = now_data['goods'].split(';')
+    record = []
+    for goods in goods_list:
+        new_str = goods
+        goods_id = goods.split(',')[0]
+        if goods_id == item_id or item_id == 0:
+            index = findSubStrIndex(',', new_str, 4) + 1
+            new_str = sub(new_str, index, 1)
+        record.append(new_str)
+    record_str = ";".join(record)
+    result['result'], result['reason'] = Event.FireEvent("UpData", "SalesRecord", 'goods', record_str, record_id)
+    if result['result']:
+        result['data'] = GetData("SalesRecord", record_id).fetchall()[0]
+    Event.FireEvent("SendMessage", "sales:returns", result, tar=target)
+
+
+# 找字符串substr在str中第time次出现的位置
+def findSubStrIndex(substr, str, time):
+    times = str.count(substr)
+    if (times == 0) or (times < time):
+        pass
+    else:
+        i = 0
+        index = -1
+        while i < time:
+            index = str.find(substr, index + 1)
+            i += 1
+        return index
+
+
+# 替换字符串string中指定位置p的字符为c
+def sub(string,p,c):
+    new = []
+    for s in string:
+        new.append(s)
+    new[p] = c
+    return ''.join('%s' % id for id in new)
 
 
 # 获取员工数据
