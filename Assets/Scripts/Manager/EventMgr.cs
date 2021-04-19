@@ -279,7 +279,7 @@ public static class Events
             public bool Result;
             public string Id;
             public string Reason;
-            public Delete(int id)
+            public Delete(JsonData id)
             {
                 this.Result = true;
                 this.Id = id.ToString();
@@ -413,7 +413,7 @@ public static class Events
             public bool Result;
             public string Id;
             public string Reason;
-            public Delete(int id)
+            public Delete(JsonData id)
             {
                 this.Result = true;
                 this.Id = id.ToString();
@@ -502,7 +502,7 @@ public static class Events
             public bool Result;
             public string Id;
             public string Reason;
-            public Delete(int id)
+            public Delete(JsonData id)
             {
                 this.Result = true;
                 this.Id = id.ToString();

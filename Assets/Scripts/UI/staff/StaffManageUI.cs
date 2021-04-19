@@ -42,10 +42,22 @@ public class StaffManageUI : UI
     }
     public void ClickAddBtn()
     {
+        // 判断权限状态
+        if (!ui_mgr.Loom.MainUser.IsAdmin())
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("INSUFFICIENT_RIGHTS")));
+            return;
+        }
         FireEvent(new Events.UI.OpenUI("StaffInfo"));
     }
     public void ClickModBtn()
     {
+        // 判断权限状态
+        if (!ui_mgr.Loom.MainUser.IsAdmin())
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("INSUFFICIENT_RIGHTS")));
+            return;
+        }
         if (CurrItem == null)
         {
             FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("UNCHECKED_STAFF")));
@@ -55,6 +67,12 @@ public class StaffManageUI : UI
     }
     public void ClickDelBtn()
     {
+        // 判断权限状态
+        if (!ui_mgr.Loom.MainUser.IsAdmin())
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("INSUFFICIENT_RIGHTS")));
+            return;
+        }
         if (CurrItem == null)
         {
             FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("UNCHECKED_STAFF")));
@@ -115,7 +133,7 @@ public class StaffManageUI : UI
         Search.text = string.Empty;
     }
     /// <summary>
-    /// 添加员工
+    /// 添加员工响应
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -131,16 +149,16 @@ public class StaffManageUI : UI
         new_item.ClickFunc = ClickFunc;
         for (int i = 0; i < StaffList.Count; i++)
         {
-            if (i + 1 < StaffList.Count && int.Parse(StaffList[i + 1].data.Id) > int.Parse(e.NewStaff.Id))
+            if (i + 1 < StaffList.Count && string.CompareOrdinal(StaffList[i].data.Id,e.NewStaff.Id) > 0)
             {
-                new_item.transform.SetSiblingIndex(i + 2);
+                new_item.transform.SetSiblingIndex(i + 1);
                 StaffList.Insert(i, new_item);
                 break;
             }
         }
     }
     /// <summary>
-    /// 修改员工
+    /// 修改员工响应
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>

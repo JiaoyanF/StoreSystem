@@ -51,10 +51,25 @@ public class GoodsManageUI : UI
     }
     public void ClickAddBtn()
     {
+        // 判断权限状态
+        if (!ui_mgr.Loom.MainUser.IsAdmin())
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("INSUFFICIENT_RIGHTS")));
+            return;
+        }
         FireEvent(new Events.UI.OpenUI("GoodsInfo"));
     }
+    /// <summary>
+    /// 修改商品点击事件
+    /// </summary>
     public void ClickModBtn()
     {
+        // 判断权限状态
+        if (!ui_mgr.Loom.MainUser.IsAdmin())
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("INSUFFICIENT_RIGHTS")));
+            return;
+        }
         if (CurrItem == null)
         {
             FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("UNCHECKED_GOODS")));
@@ -62,8 +77,17 @@ public class GoodsManageUI : UI
         }
         FireEvent(new Events.UI.OpenUI("GoodsInfo", CurrItem.data));
     }
+    /// <summary>
+    /// 删除商品点击事件
+    /// </summary>
     public void ClickDelBtn()
     {
+        // 判断权限状态
+        if (!ui_mgr.Loom.MainUser.IsAdmin())
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("INSUFFICIENT_RIGHTS")));
+            return;
+        }
         if (CurrItem == null)
         {
             FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("UNCHECKED_GOODS")));
@@ -141,16 +165,16 @@ public class GoodsManageUI : UI
         new_item.ClickFunc = ClickFunc;
         for (int i = 0; i < GoodsList.Count; i++)
         {
-            if (i + 1 < GoodsList.Count && int.Parse(GoodsList[i + 1].data.Id) > int.Parse(e.NewGoods.Id))
+            if (i + 1 < GoodsList.Count && string.CompareOrdinal(GoodsList[i].data.Id,e.NewGoods.Id) > 0)
             {
-                new_item.transform.SetSiblingIndex(i + 2);// 位置索引+2是因为还有一个"初号机"的位置要算上_(:3」∠)_
+                new_item.transform.SetSiblingIndex(i + 1);// 位置索引+1
                 GoodsList.Insert(i, new_item);
                 break;
             }
         }
     }
     /// <summary>
-    /// 修改商品信息
+    /// 修改商品响应
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -171,7 +195,7 @@ public class GoodsManageUI : UI
         }
     }
     /// <summary>
-    /// 删除商品
+    /// 删除商品响应
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>

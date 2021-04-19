@@ -124,6 +124,9 @@ public class SettleAccountsUI : UI
                 break;
             }
         }
+        CurrItem = null;
+        RefreshCurrData();
+        RefreshTotaData();
     }
     /// <summary>
     /// 点击结算
@@ -261,6 +264,8 @@ public class SettleAccountsUI : UI
     protected override void OnEnable()
     {
         InitInput();
+        RefreshCurrData();
+        RefreshTotaData();
     }
     protected override void OnUpdate() { }
     protected override void OnDisable() { }

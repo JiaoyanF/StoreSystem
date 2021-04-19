@@ -84,7 +84,7 @@ public class DataMgr : Obj
                 break;
             case "delete":
                 if (Convert.ToBoolean(con["result"].ToString()))
-                    FireEvent(new Events.GoodsEve.Delete(Convert.ToInt32(con["id"].ToString())));
+                    FireEvent(new Events.GoodsEve.Delete(con["id"]));
                 else
                     FireEvent(new Events.GoodsEve.Delete(con["reason"].ToString()));
                 break;
@@ -141,7 +141,7 @@ public class DataMgr : Obj
                 break;
             case "delete":
                 if (Convert.ToBoolean(con["result"].ToString()))
-                    FireEvent(new Events.Vip.Delete(Convert.ToInt32(con["id"].ToString())));
+                    FireEvent(new Events.Vip.Delete(con["id"]));
                 else
                     FireEvent(new Events.Vip.Delete(con["reason"].ToString()));
                 break;
@@ -183,7 +183,7 @@ public class DataMgr : Obj
                 break;
             case "delete":
                 if (Convert.ToBoolean(con["result"].ToString()))
-                    FireEvent(new Events.User.Delete(Convert.ToInt32(con["id"].ToString())));
+                    FireEvent(new Events.User.Delete(con["id"]));
                 else
                     FireEvent(new Events.User.Delete(con["reason"].ToString()));
                 break;

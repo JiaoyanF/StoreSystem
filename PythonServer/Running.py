@@ -184,7 +184,7 @@ def AddVip(target, data):
     print("添加会员数据:{0}".format(data))
     if data is not None:
         join = "%s,%s,%s" % (datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day)
-        result['result'], result['reason'] = Event.FireEvent("AddData", "Vip", data['Id'], data['Name'], data['Point'], data['Gene'], data['Birth'], join)
+        result['result'], result['reason'] = Event.FireEvent("AddData", "Vip", data['Id'], data['Name'], data['Point'], data['Gender'], data['Birth'], join)
     else:
         result['result'] = False
         result['reason'] = "添加数据为空！"

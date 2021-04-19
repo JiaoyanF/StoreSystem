@@ -115,7 +115,7 @@ public class VipManageUI : UI
         Search.text = string.Empty;
     }
     /// <summary>
-    /// 添加会员
+    /// 添加会员响应
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -131,16 +131,16 @@ public class VipManageUI : UI
         new_item.ClickFunc = ClickFunc;
         for (int i = 0; i < VipList.Count; i++)
         {
-            if (i + 1 < VipList.Count && int.Parse(VipList[i + 1].data.Id) > int.Parse(e.NewVip.Id))
+            if (i + 1 < VipList.Count && string.CompareOrdinal(VipList[i].data.Id, e.NewVip.Id) > 0)
             {
-                new_item.transform.SetSiblingIndex(i + 2);
+                new_item.transform.SetSiblingIndex(i + 1);
                 VipList.Insert(i, new_item);
                 break;
             }
         }
     }
     /// <summary>
-    /// 修改会员
+    /// 修改会员响应
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -161,7 +161,7 @@ public class VipManageUI : UI
         }
     }
     /// <summary>
-    /// 删除会员
+    /// 删除会员响应
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>

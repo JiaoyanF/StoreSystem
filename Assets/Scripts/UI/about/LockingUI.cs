@@ -55,6 +55,7 @@ public class LockingUI : UI
     protected override void OnEnable()
     {
         un_input.text = ui_mgr.Loom.MainUser.Id.ToString();
+        un_input.readOnly = true;
     }
     protected override void OnUpdate() { }
     protected override void OnDisable() { }

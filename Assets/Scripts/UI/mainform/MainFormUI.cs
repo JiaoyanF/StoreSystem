@@ -78,6 +78,12 @@ public class MainFormUI : UI
     }
     void AddGoods()
     {
+        // 判断权限状态
+        if (!ui_mgr.Loom.MainUser.IsAdmin())
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("INSUFFICIENT_RIGHTS")));
+            return;
+        }
         Log.Debug("添加商品");
         FireEvent(new Events.UI.OpenUI("GoodsInfo"));
     }
@@ -98,6 +104,12 @@ public class MainFormUI : UI
     }
     void AddStaff()
     {
+        // 判断权限状态
+        if (!ui_mgr.Loom.MainUser.IsAdmin())
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("INSUFFICIENT_RIGHTS")));
+            return;
+        }
         Log.Debug("入职");
         FireEvent(new Events.UI.OpenUI("StaffInfo"));
     }

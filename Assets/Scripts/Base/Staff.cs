@@ -29,6 +29,14 @@ public class Staff : BaseData
         this.Birth = json["birth"] != null ? json["birth"].ToString() : string.Empty;
         this.Enter = json["enter"] != null ? json["enter"].ToString() : string.Empty;
     }
+    /// <summary>
+    /// 是否是管理员
+    /// </summary>
+    /// <returns></returns>
+    public bool IsAdmin()
+    {
+        return Power == 1;
+    }
 }
 
 /// <summary>
