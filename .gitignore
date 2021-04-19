@@ -5,3 +5,6 @@
 /Assembly-CSharp.csproj
 /Assembly-CSharp-Editor.csproj
 /StoreSystem.sln
+/PythonServer/__pycache__
+/PythonServer/*.pyc
+/PythonServer/.idea
