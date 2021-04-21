@@ -42,9 +42,15 @@ namespace Def
     /// </summary>
     public class SysDefine
     {
+#if UNITY_EDITOR
         public const string PrefabPath = "Prefab/";// 预制体路径
         public const string RawImagePath = "RawImage/";
         public const string language = "Assets/Resources/Other/lang.txt";
+#else
+        public const string PrefabPath = "Resources/Prefab/";
+        public const string RawImagePath = "Resources/RawImage/";
+        public const string language = "Resources/Other/lang.txt";
+#endif
         public const string LinkNoneTips = "提示：Link为空！";
     }
 

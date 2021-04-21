@@ -39,7 +39,7 @@ def KeepRecords(target, list_name, obj_id, operation):
 
 # 验证登录
 def Verify(target, args):
-    print("登录参数：{0}".format(args))
+    # print("登录参数：{0}".format(args))
     if args is None:
         return
     cursor = GetData("Staff", args["username"]).fetchall()
@@ -58,7 +58,7 @@ def Verify(target, args):
 # 获取商品数据
 def GetGoodsData(target, args=None):
     result = {'type': "get", 'result': False}
-    print("获取商品数据：{0}".format(args))
+    # print("获取商品数据：{0}".format(args))
     if args is not None:
         cursor = GetData("Goods", args).fetchall()
     else:
@@ -88,7 +88,7 @@ def AddGoods(target, data):
 # 删除商品
 def DeleteGoods(target, data):
     result = {'type': "delete", 'result': False, }
-    print("删除商品数据:{0}".format(data))
+    # print("删除商品数据:{0}".format(data))
     result['result'], result['reason'] = DelData("Goods", data)
     if result['result'] is True:
         result['id'] = data
@@ -100,11 +100,11 @@ def DeleteGoods(target, data):
 # 修改商品
 def UpdateGoods(target, data):
     result = {'type': "update", 'result': False}
-    print("修改商品数据:{0}".format(data))
+    # print("修改商品数据:{0}".format(data))
     now_data = GetData("Goods", data['Id'])
     head_info = now_data.description  # 表头
     original = now_data.fetchall()[0]  # 原数据
-    print("原数据:{0}".format(original))
+    # print("原数据:{0}".format(original))
     for field in head_info:
         if original[field[0]] == data[field[0].title()]:
             continue
@@ -138,12 +138,12 @@ def AddShop(target, data):
 # 结账
 def Settle(target, data):
     result = {'type': "settle", 'result': False}
-    print("结算数据:{0}".format(data))
+    # print("结算数据:{0}".format(data))
     record = []
     money = 0
     # 整理购买清单
     for item in data['SalesList']:
-        print(item)
+        # print(item)
         find = GetData("Goods", item['Id']).fetchall()[0]
         if find['stock'] < item['Num']:
             result['reason'] = "购买列表中有商品库存不足!"
@@ -153,7 +153,7 @@ def Settle(target, data):
         record.append(arg)
         result['result'], result['reason'] = Event.FireEvent("UpData", "Goods", "stock", find['stock'] - item['Num'], str(item['Id']))
     record_str = ";".join(record)
-    print("销售清单:{0}".format(record_str))
+    # print("销售清单:{0}".format(record_str))
     index = len(GetData("SalesRecord").fetchall()) + 1
     now_time = "%s,%s,%s" % (datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day)
     member_id = data['Vip']
@@ -165,7 +165,7 @@ def Settle(target, data):
 # 获取会员数据
 def GetVipData(target, args):
     result = {'type': "get", 'result': False}
-    print("获取会员数据：{0}".format(args))
+    # print("获取会员数据：{0}".format(args))
     if args is not None:
         cursor = GetData("Vip", args).fetchall()
     else:
@@ -181,7 +181,7 @@ def GetVipData(target, args):
 # 添加会员
 def AddVip(target, data):
     result = {'type': "add", 'result': False}
-    print("添加会员数据:{0}".format(data))
+    # print("添加会员数据:{0}".format(data))
     if data is not None:
         join = "%s,%s,%s" % (datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day)
         result['result'], result['reason'] = Event.FireEvent("AddData", "Vip", data['Id'], data['Name'], data['Point'], data['Gender'], data['Birth'], join)
@@ -197,7 +197,7 @@ def AddVip(target, data):
 # 删除会员
 def DeleteVip(target, data):
     result = {'type': "delete", 'result': False, }
-    print("删除会员数据:{0}".format(data))
+    # print("删除会员数据:{0}".format(data))
     result['result'], result['reason'] = DelData("Vip", data)
     if result['result'] is True:
         result['id'] = data
@@ -208,11 +208,11 @@ def DeleteVip(target, data):
 # 修改会员
 def UpdateVip(target, data):
     result = {'type': "update", 'result': False}
-    print("修改会员数据:{0}".format(data))
+    # print("修改会员数据:{0}".format(data))
     now_data = GetData("Vip", data['Id'])
     head_info = now_data.description  # 表头
     original = now_data.fetchall()[0]  # 原数据
-    print("原数据:{0}".format(original))
+    # print("原数据:{0}".format(original))
     for field in head_info:
         if original[field[0]] == data[field[0].title()] or field[0] == "enter":
             continue
@@ -226,7 +226,7 @@ def UpdateVip(target, data):
 # 获取销售清单
 def GetSalesRecord(target, args):
     result = {'type': "get", 'result': False}
-    print("获取销售数据：{0}".format(args))
+    # print("获取销售数据：{0}".format(args))
     if args is not None:
         cursor = GetData("SalesRecord", args).fetchall()
     else:
@@ -249,9 +249,9 @@ def Returns(target, args):
         item_id = args[1]
     else:
         record_id = args
-    print("退货数据:{0}".format(args))
+    # print("退货数据:{0}".format(args))
     now_data = GetData("SalesRecord", record_id).fetchall()[0]
-    print("原数据:{0}".format(now_data))
+    # print("原数据:{0}".format(now_data))
     goods_list = now_data['goods'].split(';')
     record = []
     for goods in goods_list:
@@ -294,7 +294,7 @@ def sub(string,p,c):
 # 获取员工数据
 def GetStaffData(target, args):
     result = {'type': "get", 'result': False}
-    print("获取员工数据：{0}".format(args))
+    # print("获取员工数据：{0}".format(args))
     if args is not None:
         cursor = GetData("Staff", args).fetchall()
     else:
@@ -310,7 +310,7 @@ def GetStaffData(target, args):
 # 添加员工
 def AddStaff(target, data):
     result = {'type': "add", 'result': False}
-    print("添加员工数据:{0}".format(data))
+    # print("添加员工数据:{0}".format(data))
     if data is not None:
         join = "%s,%s,%s" % (datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day)
         result['result'], result['reason'] = Event.FireEvent("AddData", "Staff", data['Id'], data['Name'], data['Password'], data['Power'], data['Tel'], data['Gender'], data['Birth'], join)
@@ -324,8 +324,8 @@ def AddStaff(target, data):
 
 # 删除会员
 def DeleteStaff(target, data):
-    result = {'type': "delete", 'result': False, }
-    print("删除员工数据:{0}".format(data))
+    result = {'type': "delete", 'result': False}
+    # print("删除员工数据:{0}".format(data))
     result['result'], result['reason'] = DelData("Staff", data)
     if result['result'] is True:
         result['id'] = data
@@ -335,11 +335,11 @@ def DeleteStaff(target, data):
 # 修改会员
 def UpdateStaff(target, data):
     result = {'type': "update", 'result': False}
-    print("修改员工数据:{0}".format(data))
+    # print("修改员工数据:{0}".format(data))
     now_data = GetData("Staff", data['Id'])
     head_info = now_data.description  # 表头
     original = now_data.fetchall()[0]  # 原数据
-    print("原数据:{0}".format(original))
+    # print("原数据:{0}".format(original))
     for field in head_info:
         if original[field[0]] == data[field[0].title()] or field[0] == "enter":
             continue

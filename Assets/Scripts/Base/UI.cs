@@ -139,11 +139,12 @@ public abstract class UI : MonoBehaviour, IDisposable
     }
     public void SetActive<T>(T obj, bool active) where T : Component
     {
-        if (obj == null && obj.gameObject == null) return;
+        if (this == null) return;
         obj.gameObject.SetActive(active);
     }
     public void SetActive(GameObject obj, bool active)
     {
+        if (obj == null) return;
         obj.SetActive(active);
     }
 
@@ -213,11 +214,11 @@ public abstract class UI : MonoBehaviour, IDisposable
     /// <param name="target">目标</param>
     public GameObject Get<T>(T own, string target) where T : Component
     {
-        return Tool.FindChild(own.transform, target).gameObject;
+        return Tool.FindChild(own.transform, target)?.gameObject;
     }
     public GameObject Get(GameObject own, string target)
     {
-        return Tool.FindChild(own.transform, target).gameObject;
+        return Tool.FindChild(own.transform, target)?.gameObject;
     }
 
     /// <summary>
@@ -247,14 +248,19 @@ public abstract class UI : MonoBehaviour, IDisposable
     /// <param name="target">目标名</param>
     public T GetControl<T>(Component own, string target) where T : Component
     {
-        return GetControl<T>(Tool.FindChild(own.transform, target).gameObject);
+        Transform t = Tool.FindChild(own.transform, target);
+        if (t == null) return null;
+        return GetControl<T>(t.gameObject);
     }
     public T GetControl<T>(GameObject own, string target) where T : Component
     {
-        return GetControl<T>(Tool.FindChild(own.transform, target).gameObject);
+        Transform t = Tool.FindChild(own.transform, target);
+        if (t == null) return null;
+        return GetControl<T>(t.gameObject);
     }
     public T GetControl<T>(GameObject own) where T : Component
     {
+        if (own == null) return null;
         return own.GetComponent<T>();
     }
 

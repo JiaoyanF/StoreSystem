@@ -72,7 +72,7 @@ def Execute(target, source):
 
 # 添加数据
 def AddData(args):
-    print("添加数据:".format(args))
+    # print("添加数据:".format(args))
     cur = FindData(args[0])
     fields = cur.description
     # print(fields)
@@ -103,7 +103,7 @@ def AddData(args):
 # 修改数据
 def UpData(args):
     cursor = InitDB()
-    print("修改数据:{0}".format(args))
+    # print("修改数据:{0}".format(args))
     try:
         num = cursor.execute("update %s set %s = '%s' where id = '%s'" % (args[0], args[1], args[2], args[3]))
         print("修改后受影响的行数为：", num)
@@ -118,7 +118,7 @@ def UpData(args):
 # 删除数据
 def DeleteData(args):
     cursor = InitDB()
-    print("删除数据:{0}".format(args))
+    # print("删除数据:{0}".format(args))
     try:
         num = cursor.execute("delete from %s where %s = '%s'" % (args[0], args[1], args[2]))
         CommitDB()
@@ -131,7 +131,7 @@ def DeleteData(args):
 
 # 查找数据
 def FindData(args):
-    print("查询参数：{0}".format(args))
+    # print("查询参数：{0}".format(args))
     cursor = InitDB()
     if type(args) is str:
         cursor.execute("select * from %s" % args)

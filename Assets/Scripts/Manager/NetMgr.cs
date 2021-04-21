@@ -73,6 +73,11 @@ public class NetMgr : Obj
     }
     public void SendMessage(string mess)
     {
+        if (!conn.Connected)
+        {
+            FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("CONNECT_UNUNITED")));
+            return;
+        }
         Log.Debug("发送：{0}", mess);
         conn.Send(Encoding.UTF8.GetBytes(mess));
     }
@@ -106,7 +111,7 @@ public class NetMgr : Obj
             Events[tag].Call(context);
         }else
         {
-            Log.Debug("协议【{0}】未定义事件", tag);
+            FireEvent(new Events.UI.OpenUI("CommonTips", "未定义协议:" + tag));
         }
     }
 
@@ -125,6 +130,7 @@ public class NetMgr : Obj
     public void CloseNet()
     {
         is_connect = false;
+        if (!conn.Connected) return;
         conn.Send(Encoding.UTF8.GetBytes("exit"));
         Log.Debug("断开连接");
         receiveThread.Abort();
