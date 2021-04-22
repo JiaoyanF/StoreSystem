@@ -36,8 +36,8 @@ public class NetMgr : Obj
     private void Connect()
     {
         conn = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        // IPAddress Host = IPAddress.Parse("119.29.65.81");
-        IPAddress Host = IPAddress.Parse("127.0.0.1");
+        IPAddress Host = IPAddress.Parse("119.29.65.81");
+        // IPAddress Host = IPAddress.Parse("127.0.0.1");
         int Post = 522;
         // 把IP和端口号集成在一个网络端点中
         IPEndPoint endpoint = new IPEndPoint(Host, Post);

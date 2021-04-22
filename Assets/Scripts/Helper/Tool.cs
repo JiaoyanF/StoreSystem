@@ -269,7 +269,13 @@ public class Localization
     private static Map<string, string> Lang = new Map<string, string>();
     public static void LoadLang()
     {
+#if UNITY_EDITOR
         string[] strs = File.ReadAllLines(SysDefine.language);
+        Log.Debug(new WWW(Application.streamingAssetsPath + "/lang.txt").url);
+#else
+        string[] strs = File.ReadAllLines(Application.streamingAssetsPath + "/lang.txt");
+#endif
+        
         foreach (var line in strs)
         {
             string[] str = line.Split(new char[] { '\t' });
