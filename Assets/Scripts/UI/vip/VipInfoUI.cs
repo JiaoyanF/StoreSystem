@@ -71,7 +71,7 @@ public class VipInfoUI : UI
             FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("ADDVIP_NAME_TIPS")));
             return;
         }
-        if (int.Parse(point_input.text) < 0)
+        if (point_input.text != string.Empty && int.Parse(point_input.text) < 0)
         {
             FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("ADDVIP_POINT_TIPS")));
             return;
@@ -79,7 +79,7 @@ public class VipInfoUI : UI
         Member vip = new Member();
         vip.Id = index_input.text;
         vip.Name = name_input.text;
-        vip.Point = int.Parse(point_input.text);
+        vip.Point = point_input.text != string.Empty ? int.Parse(point_input.text) : 0;
         vip.Gender = gender_drop.value;
         vip.Birth = Tool.DateTimeChange(year_input.text, month_input.text, day_input.text);
         if (UpdateData != null)

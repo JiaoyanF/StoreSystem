@@ -59,7 +59,7 @@ public class GoodsInfoUI : UI
             FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("ADDGOODS_PRICE_TIPS")));
             return;
         }
-        if (int.Parse(stock_input.text) < 0)
+        if (stock_input.text != string.Empty && int.Parse(stock_input.text) < 0)
         {
             FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("ADDGOODS_STOCK_TIPS")));
             return;
@@ -68,7 +68,7 @@ public class GoodsInfoUI : UI
         god.Id = index_input.text;
         god.Name = name_input.text;
         god.Price = double.Parse(price_input.text);
-        god.Stock = int.Parse(stock_input.text);
+        god.Stock = stock_input.text != string.Empty ? int.Parse(stock_input.text) : 0;
         god.Tips = desc_input.text;
         god.Type = type_drop.value;
         if (UpdateData != null)

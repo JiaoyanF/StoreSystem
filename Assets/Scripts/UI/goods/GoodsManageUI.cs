@@ -98,12 +98,28 @@ public class GoodsManageUI : UI
         btns.Add("取消", null);
         FireEvent(new Events.UI.OpenUI("CommonPanel", Localization.Format("DELETEGOODS_SURE_TIPS", CurrItem.data.Name), btns));
     }
+    /// <summary>
+    /// 确认删除
+    /// </summary>
+    void SureDel()
+    {
+        for (int i = 0; i < GoodsList.Count; i++)
+        {
+            if (GoodsList[i].data.Id == CurrItem.data.Id)
+            {
+                GoodsList.Remove(GoodsList[i]);
+                NetMgr.SendMessage(NetTag.Goods.DeleteGoods, CurrItem.data.Id);
+                break;
+            }
+        }
+    }
     // 筛选显示
     void ScreenShow<T>(T args)
     {
         // args.GetType() == typeof(string)
         int select_index = Screen.value;
         string input_key = Search.text;
+        Log.Debug(GoodsList.Count.ToString());
         foreach (GoodsItem item in GoodsList)
         {
             string compare = string.Empty;
@@ -167,8 +183,10 @@ public class GoodsManageUI : UI
         {
             if (i + 1 < GoodsList.Count && string.CompareOrdinal(GoodsList[i].data.Id,e.NewGoods.Id) > 0)
             {
-                new_item.transform.SetSiblingIndex(i + 1);// 位置索引+1
                 GoodsList.Insert(i, new_item);
+                Log.Debug(GoodsList.Count.ToString());
+                Log.Debug(i.ToString());
+                new_item.transform.SetSiblingIndex(i + 1);// 位置索引+1
                 break;
             }
         }

@@ -53,7 +53,7 @@ public class LoginPanel : UIElement
         if (un_input.text == "" || ps_input.text == "")
         {
             ResetData();
-            Log.Debug("数据不完整");
+            Root.FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("INPUT_IS_NULL_TIPS")));
             return;
         }
         JsonData data = new JsonData();
@@ -80,8 +80,8 @@ public class LoginPanel : UIElement
     /// </summary> 
     private void ResetData()
     {
-        un_input.text = "1998";
-        ps_input.text = "0522";
+        un_input.text = "";
+        ps_input.text = "";
     }
     private void MaskClick()
     {

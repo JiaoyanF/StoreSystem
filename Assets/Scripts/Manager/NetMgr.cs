@@ -35,6 +35,7 @@ public class NetMgr : Obj
     /// </summary>
     private void Connect()
     {
+        if (conn != null && conn.Connected) return;
         conn = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         IPAddress Host = IPAddress.Parse("119.29.65.81");
         // IPAddress Host = IPAddress.Parse("127.0.0.1");
@@ -73,6 +74,7 @@ public class NetMgr : Obj
     }
     public void SendMessage(string mess)
     {
+        Connect();
         if (!conn.Connected)
         {
             FireEvent(new Events.UI.OpenUI("CommonTips", Localization.Format("CONNECT_UNUNITED")));
@@ -109,7 +111,8 @@ public class NetMgr : Obj
         if (Events.ContainsKey(tag))
         {
             Events[tag].Call(context);
-        }else
+        }
+        else
         {
             FireEvent(new Events.UI.OpenUI("CommonTips", "未定义协议:" + tag));
         }
